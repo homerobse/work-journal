@@ -10,6 +10,7 @@ from datetime import date, timedelta
 
 txt_format = '.txt'
 utf8_encoding = "utf-8"
+DATE_FORMAT = "%Y-%m-%d"
 # iso_encoding = "ISO-8859-1"
 
 def check_worktimes():  # not used yet
@@ -100,6 +101,7 @@ def test_calc_total_work_time():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('n_files', type=int, nargs='?', help='number of days to be displayed')
+    parser.add_argument('-c', '--count', type=int, help='print the number of hours worked in the last "c" days')
     parser.add_argument('-w', '--week', help='show week times', action='store_true')
     parser.add_argument('-t', '--test', help='test application', action='store_true')
     args = parser.parse_args()
@@ -134,16 +136,16 @@ if __name__ == '__main__':
     count=0
     ordered_files = natsort.humansorted(all_files, reverse=True)
 
-    if args.week:
-        n_days = 10
-        # date_file = filename.split('.')[0]  # remove .txt suffix
+    if args.count:
+        n_days = args.count
         today = date.today()
         one_day = timedelta(days=1)
-        start_date = today - 10*one_day
-        start_day = start_date.strftime(date_format)
+        dt = today - n_days*one_day
         for i in range(n_days):
-            start_day+".txt"
-            worked_time = get_worked_time_for_strdate(start_day)
+            day = dt.strftime(DATE_FORMAT)
+            worked_time = get_worked_time_for_strdate(day)
+            print(dt, worked_time)
+            dt+=one_day
 
         # # example get all days since last monday
         # last_monday = today + timedelta(days=-today.weekday())
@@ -153,6 +155,8 @@ if __name__ == '__main__':
 
         # # get date from string
         # datetime.datetime.strptime("2020-01-05", date_format).date()
+        # # remove .txt suffix
+        # date_file = filename.split('.')[0]
     else:
         for filename in ordered_files:
             if re.match('.*\.txt$', filename):
