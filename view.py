@@ -2,6 +2,7 @@
 import os
 import sys
 import re
+import numpy as np
 import natsort
 import argparse
 from dateutil.relativedelta import relativedelta
@@ -24,6 +25,16 @@ def check_worktimes():  # not used yet
 
 def str_to_relativedelta(str):
     return relativedelta(datetime.datetime.strptime(str, '%H:%M'), datetime.datetime.strptime('0:0', '%H:%M'))
+
+
+def str_to_timedelta(str):
+    tmp_dt = datetime.datetime.strptime(str, "%H:%M")
+    return timedelta(hours=tmp_dt.hour, minutes=tmp_dt.minute)
+
+
+def timedelta_to_str(td):
+    return "%d:%d" % (td.seconds//3600, ((td.seconds // 60) % 60))
+
 
 def relativedelta_to_str(relativedeltaobj):
     timeobj = relativedeltaobj+datetime.datetime.strptime('0:0', '%H:%M')
@@ -66,7 +77,7 @@ def get_worked_time_for_strdate(strdate):
             text = f.read().strip()
             work_time = relativedelta_to_str(calc_total_work_time(text))
     except FileNotFoundError as e: 
-        work_time = 0
+        work_time = "0:00"
 
     return work_time
 
@@ -141,12 +152,20 @@ if __name__ == '__main__':
         today = date.today()
         one_day = timedelta(days=1)
         dt = today - n_days*one_day
+        hours = []
+        weekend_days = 0
         for i in range(n_days):
             day = dt.strftime(DATE_FORMAT)
             worked_time = get_worked_time_for_strdate(day)
             print(dt, dt.strftime('%a'), worked_time)
-            dt+=one_day
+            if dt.strftime("%a") in ["Sat", "Sun"]:
+                weekend_days+=1
 
+            hours.append(str_to_timedelta(worked_time))
+            dt+=one_day
+        print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/(n_days-weekend_days)))
+#        print("***\nAverage hours worked per working day: %s" % (np.sum(hours)/(n_days-weekend_days)))
+ 
         # # example get all days since last monday
         # last_monday = today + timedelta(days=-today.weekday())
         # delta = today - last_monday
