@@ -33,7 +33,7 @@ def str_to_timedelta(str):
 
 
 def timedelta_to_str(td):
-    return "%d:%d" % (td.seconds//3600, ((td.seconds // 60) % 60))
+    return "%d:%02d" % (td.days*24 + td.seconds//3600, ((td.seconds // 60) % 60))
 
 
 def relativedelta_to_str(relativedeltaobj):
@@ -164,8 +164,8 @@ if __name__ == '__main__':
             hours.append(str_to_timedelta(worked_time))
             dt+=one_day
         print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/(n_days-weekend_days)))
-#        print("***\nAverage hours worked per working day: %s" % (np.sum(hours)/(n_days-weekend_days)))
- 
+        print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
+
         # # example get all days since last monday
         # last_monday = today + timedelta(days=-today.weekday())
         # delta = today - last_monday
