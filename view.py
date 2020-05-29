@@ -144,7 +144,7 @@ if __name__ == '__main__':
         for i in range(n_days):
             day = dt.strftime(DATE_FORMAT)
             worked_time = get_worked_time_for_strdate(day)
-            print(dt, worked_time)
+            print(dt, dt.strftime('%a'), worked_time)
             dt+=one_day
 
         # # example get all days since last monday
