@@ -2,6 +2,8 @@
 import os
 import sys
 import re
+import calendar
+
 import numpy as np
 import natsort
 import argparse
@@ -95,6 +97,78 @@ def get_worked_time_for_strdate(strdate):
     return work_time
 
 
+def get_month_range(year, month):
+    nb_days = calendar.monthrange(year, month)[1]
+    return [datetime.date(year, month, day) for day in range(1, nb_days+1)]
+
+
+def calc_worked_time_in_date_range(date_range):
+    """
+    Note: *27/Feb/2019 was when I first started taking note of the amount of hours dedicated to each activity
+    * 14/Mar/2019 was when I first started taking note of the hours of start and end of work
+    :return (total worked hours, average worked hours per working day,
+        reference number of hours for 8h working days)
+    """
+    hours=[]
+    weekend_days = 0
+    one_day = timedelta(days=1)
+    for dt in month_range:
+        day = dt.strftime(DATE_FORMAT)
+        worked_time = get_worked_time_for_strdate(day)
+        if dt.strftime("%a") in ["Sat", "Sun"]:
+            weekend_days+=1
+
+        hours.append(str_to_timedelta(worked_time))
+        dt+=one_day
+    n_working_days = len(date_range)-weekend_days
+    return timedelta_to_str(np.sum(hours)), timedelta_to_str(np.sum(hours)/n_working_days), \
+        n_working_days*8
+
+
+def get_nth_prev_month(curr_yr, curr_mn, nb_mn):
+    """Return `(year, month)` correspondent to `nb_mn` months before the `(curr_yr, curr_mn)` given
+    :param curr_yr: current year
+    :param curr_mn: current month
+    :param nb_mn: number of months
+    :return (year, month)
+    """
+    tmp_mn = curr_mn - nb_mn - 1
+    q = tmp_mn // 12
+    r = tmp_mn % 12
+    mn = 1 + r
+    yr = curr_yr
+    if q < 0:
+        yr = curr_yr + q
+        mn = 1 + r
+    return yr, mn
+
+
+def test_get_nth_prev_month():
+    curr_yr = 2020
+    curr_mn = 6
+    nb_mn = 2
+    ref = (2020, 4)
+    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
+    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
+        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+
+    curr_yr = 2020
+    curr_mn = 6
+    nb_mn = 6
+    ref = (2019, 12)
+    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
+    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
+        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+
+    curr_yr = 2020
+    curr_mn = 6
+    nb_mn = 19
+    ref = (2018, 11)
+    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
+    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
+        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+
+
 def test_calc_total_work_time():
     text = """
     * write down reward modulated learning rule and include sketch figure
@@ -126,19 +200,21 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('n_files', type=int, nargs='?', help='number of days to be displayed')
     parser.add_argument('-c', '--count', type=int, help='print the number of hours worked in the last "c" days')
-    parser.add_argument('-w', '--week', help='show week times', action='store_true')
-    parser.add_argument('-t', '--test', help='test application', action='store_true')
+    parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
+    parser.add_argument('-w', '--week', help='show week times, not implemented yet', action='store_true')  #TODO implement this
+    parser.add_argument('-t', '--test', help='run application tests. If it succeeds, nothing is printed. Errors are printed otherwise.', action='store_true')
     args = parser.parse_args()
-    
+
     all_files = os.listdir()
-    
+
     if args.n_files is None:
         n_files = len(all_files)
     else:
         n_files = args.n_files
-    
+
     if args.test:
         test_calc_total_work_time()
+        test_get_nth_prev_month()
         exit()
 
     ## old parser begin ##
@@ -164,10 +240,10 @@ if __name__ == '__main__':
         n_days = args.count
         today = date.today()
         one_day = timedelta(days=1)
-        dt = today - n_days*one_day
+        dt = today - n_days * one_day
         hours = []
         weekend_days = 0
-        for i in range(n_days):
+        for _ in range(n_days):
             day = dt.strftime(DATE_FORMAT)
             worked_time = get_worked_time_for_strdate(day)
             print(dt, dt.strftime('%a'), worked_time)
@@ -187,8 +263,26 @@ if __name__ == '__main__':
 
         # # get date from string
         # datetime.datetime.strptime("2020-01-05", date_format).date()
-        # # remove .txt suffix
-        # date_file = filename.split('.')[0]
+
+    elif args.months:
+        n_months = args.months
+        today = date.today()
+        hours = []
+        ref_hours = []
+        for m in range(n_months):
+            curr_yr_mn = get_nth_prev_month(today.year, today.month, n_months - m - 1)
+            print("%d-%02d" % curr_yr_mn)
+            month_range = get_month_range(*curr_yr_mn)
+            res = calc_worked_time_in_date_range(month_range)
+
+            print("%6s (ref %d). Avg./work day: %5s" % (res[0], res[2], res[1]))
+            hours.append(str_to_timedelta(res[0]))
+            ref_hours.append(res[2])
+
+        print("***")
+        print("Actual      ", timedelta_to_str(np.sum(hours)))
+        print("REF (8h/day)", np.sum(ref_hours))
+
     else:
         for filename in ordered_files:
             if re.match('.*\.txt$', filename):
