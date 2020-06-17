@@ -14,6 +14,7 @@ utf8_encoding = "utf-8"
 DATE_FORMAT = "%Y-%m-%d"
 # iso_encoding = "ISO-8859-1"
 
+
 def check_worktimes():  # not used yet
     with open('/home/homero/hd/Dropbox/oxford/journal/2019-5-13.txt', 'r') as f:
         text = f.read()
@@ -23,16 +24,28 @@ def check_worktimes():  # not used yet
     end = re.findall('\^E(\d?\d:\d\d)', text)
     return arrivals, leavings, start, end
 
+
 def str_to_relativedelta(str):
     return relativedelta(datetime.datetime.strptime(str, '%H:%M'), datetime.datetime.strptime('0:0', '%H:%M'))
 
 
-def str_to_timedelta(str):
-    tmp_dt = datetime.datetime.strptime(str, "%H:%M")
-    return timedelta(hours=tmp_dt.hour, minutes=tmp_dt.minute)
+def str_to_timedelta(time_str):
+    """
+    Convert time from string format to timedelta
+    :param time_str: time string in format hours:minutes. E.g. 198:55, or 4:32
+    :return: timedelta object
+    """
+    return timedelta(seconds=int(time_str.split(":")[0]) * 3600 + int(time_str.split(":")[1]) * 60)
 
 
 def timedelta_to_str(td):
+    """
+    Convert from timedelta to string of format hours:minutes
+    :param td: timedelta
+    :return: hours:minutes
+    """
+    # the minutes are calculated by getting the quotient of how many total minutes there are, and then getting just the remainder in the division by
+    # 60, because the hours are already accounted in the first term of the ordinate pair
     return "%d:%02d" % (td.days*24 + td.seconds//3600, ((td.seconds // 60) % 60))
 
 
@@ -44,10 +57,10 @@ def relativedelta_to_str(relativedeltaobj):
 def calc_total_work_time(daily_journal):
     """
     Calculates amount of worked hours in the day
-    :param daily_journal: 
+    :param daily_journal: daily journal string
     :return: dateutil.relativedelta of amount of worked hours
     """
-    duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)
+    duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
 
 
     attributions = []
@@ -60,7 +73,7 @@ def calc_total_work_time(daily_journal):
     for dur in durations: 
         total_work += str_to_relativedelta(dur)
 
-    try:
+    try:  #TODO: remove also time counted towards "personal" attribution
         procrastination_idx = attributions.index('procrastination')
         return total_work - str_to_relativedelta(durations[procrastination_idx])
     except ValueError:
@@ -72,11 +85,11 @@ def get_worked_time_for_strdate(strdate):
     :param strdate: data in string format YYYY-MM-DD
     :return work_time
     """
-    try: 
+    try:
         with open(strdate+txt_format, 'r', encoding="utf-8") as f:
             text = f.read().strip()
             work_time = relativedelta_to_str(calc_total_work_time(text))
-    except FileNotFoundError as e: 
+    except FileNotFoundError as e:
         work_time = "0:00"
 
     return work_time
