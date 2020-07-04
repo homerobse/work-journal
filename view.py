@@ -7,7 +7,6 @@ import calendar
 import numpy as np
 import natsort
 import argparse
-from dateutil.relativedelta import relativedelta
 import datetime
 from datetime import date, timedelta
 
@@ -25,10 +24,6 @@ def check_worktimes():  # not used yet
     start = re.findall('\^S(\d?\d:\d\d)', text)
     end = re.findall('\^E(\d?\d:\d\d)', text)
     return arrivals, leavings, start, end
-
-
-def str_to_relativedelta(str):
-    return relativedelta(datetime.datetime.strptime(str, '%H:%M'), datetime.datetime.strptime('0:0', '%H:%M'))
 
 
 def str_to_timedelta(time_str):
@@ -51,16 +46,11 @@ def timedelta_to_str(td):
     return "%d:%02d" % (td.days*24 + td.seconds//3600, ((td.seconds // 60) % 60))
 
 
-def relativedelta_to_str(relativedeltaobj):
-    timeobj = relativedeltaobj+datetime.datetime.strptime('0:0', '%H:%M')
-    return '%d:%02d' % (timeobj.hour, timeobj.minute)
-
-
 def calc_total_work_time(daily_journal):
     """
     Calculates amount of worked hours in the day
     :param daily_journal: daily journal string
-    :return: dateutil.relativedelta of amount of worked hours
+    :return: timedelta of amount of worked hours
     """
     duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
 
@@ -71,13 +61,13 @@ def calc_total_work_time(daily_journal):
         attributions.append(item[0])
         durations.append(item[1])
 
-    total_work = relativedelta(seconds=0)
+    total_work = timedelta(seconds=0)
     for dur in durations: 
-        total_work += str_to_relativedelta(dur)
+        total_work += str_to_timedelta(dur)
 
     try:  #TODO: remove also time counted towards "personal" attribution
         procrastination_idx = attributions.index('procrastination')
-        return total_work - str_to_relativedelta(durations[procrastination_idx])
+        return total_work - str_to_timedelta(durations[procrastination_idx])
     except ValueError:
         return total_work
 
@@ -90,7 +80,7 @@ def get_worked_time_for_strdate(strdate):
     try:
         with open(strdate+txt_format, 'r', encoding="utf-8") as f:
             text = f.read().strip()
-            work_time = relativedelta_to_str(calc_total_work_time(text))
+            work_time = timedelta_to_str(calc_total_work_time(text))
     except FileNotFoundError as e:
         work_time = "0:00"
 
@@ -191,9 +181,9 @@ def test_calc_total_work_time():
     """
 
     work_time=calc_total_work_time(text)
-    ref_work_time=relativedelta(hours=8, minutes=25)
+    ref_work_time=timedelta(hours=8, minutes=25)
     assert work_time==ref_work_time, 'Error! The amount of hours worked in this day was %s, not %s' % \
-                                        (relativedelta_to_str(ref_work_time), relativedelta_to_str(work_time))
+                                        (timedelta_to_str(ref_work_time), timedelta_to_str(work_time))
 
 
 if __name__ == '__main__':
@@ -202,7 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--count', type=int, help='print the number of hours worked in the last "c" days')
     parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
     parser.add_argument('-w', '--week', help='show week times, not implemented yet', action='store_true')  #TODO implement this
-    parser.add_argument('-t', '--test', help='run application tests. If it succeeds, nothing is printed. Errors are printed otherwise.', action='store_true')
+    parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
     args = parser.parse_args()
 
     all_files = os.listdir()
@@ -215,6 +205,7 @@ if __name__ == '__main__':
     if args.test:
         test_calc_total_work_time()
         test_get_nth_prev_month()
+        print("If nothing was printed above, all tests succeeded")
         exit()
 
     ## old parser begin ##
@@ -284,15 +275,18 @@ if __name__ == '__main__':
         print("REF (8h/day)", np.sum(ref_hours))
 
     else:
+        cumulative_worked_time = timedelta(seconds=0)
         for filename in ordered_files:
             if re.match('.*\.txt$', filename):
                 with open(filename, 'r', encoding=utf8_encoding) as f:
                 # with open(filename, 'r') as f:
                     text = f.read().strip()
-                    work_time = relativedelta_to_str(calc_total_work_time(text))
-                    print('========================', filename, '- Time Worked -', work_time, '========================\n')
+                    work_time = calc_total_work_time(text)
+                    cumulative_worked_time += work_time
+                    print('========================', filename, '- Time Worked -', timedelta_to_str(work_time), '========================\n')
                     print(text)
                     print('\n')
                 count+=1
                 if count>=n_files:
+                    print('#### TOTAL ACCUMULATED TIME WORKED WAS ',  timedelta_to_str(cumulative_worked_time))
                     break
