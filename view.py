@@ -8,11 +8,18 @@ import numpy as np
 import natsort
 import argparse
 import datetime
-from datetime import date, timedelta
+from datetime import timedelta
 
 txt_format = '.txt'
 utf8_encoding = "utf-8"
 DATE_FORMAT = "%Y-%m-%d"
+try:
+    with open("vacations", "r") as f:
+        VACATIONS = f.read().splitlines()
+except FileNotFoundError as e:
+    print("Please create a vacations text file.")
+    exit()
+
 # iso_encoding = "ISO-8859-1"
 
 
@@ -75,7 +82,7 @@ def calc_total_work_time(daily_journal):
 def get_worked_time_for_strdate(strdate):
     """Extract total work time from given date
     :param strdate: data in string format YYYY-MM-DD
-    :return work_time
+    :return (str) work_time (format HH:MM)
     """
     try:
         with open(strdate+txt_format, 'r', encoding="utf-8") as f:
@@ -88,8 +95,21 @@ def get_worked_time_for_strdate(strdate):
 
 
 def get_month_range(year, month):
+    """Get list of all dates in a month
+    :param (int) year: YYYY
+    :param (int) month: MM
+    :return (list of datetimes) month_dates
+    """
     nb_days = calendar.monthrange(year, month)[1]
     return [datetime.date(year, month, day) for day in range(1, nb_days+1)]
+
+
+def is_weekend_or_vacation(date):
+    """ Check if given date is weekend or vacation. I.e. it is a day off.
+    :param (datetime.date) date
+    :return (bool) True if it is a date of a weekend of vacation, False if not.
+    """
+    return date.strftime("%a") in ["Sat", "Sun"] or date.strftime(DATE_FORMAT) in VACATIONS
 
 
 def calc_worked_time_in_date_range(date_range):
@@ -100,17 +120,17 @@ def calc_worked_time_in_date_range(date_range):
         reference number of hours for 8h working days)
     """
     hours=[]
-    weekend_days = 0
+    off_days = 0
     one_day = timedelta(days=1)
-    for dt in month_range:
+    for dt in date_range:
         day = dt.strftime(DATE_FORMAT)
         worked_time = get_worked_time_for_strdate(day)
-        if dt.strftime("%a") in ["Sat", "Sun"]:
-            weekend_days+=1
+        if is_weekend_or_vacation(dt):
+            off_days+=1
 
         hours.append(str_to_timedelta(worked_time))
         dt+=one_day
-    n_working_days = len(date_range)-weekend_days
+    n_working_days = len(date_range)-off_days
     return timedelta_to_str(np.sum(hours)), timedelta_to_str(np.sum(hours)/n_working_days), \
         n_working_days*8
 
@@ -191,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('n_files', type=int, nargs='?', help='number of days to be displayed')
     parser.add_argument('-c', '--count', type=int, help='print the number of hours worked in the last "c" days')
     parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
-    parser.add_argument('-w', '--week', help='show week times, not implemented yet', action='store_true')  #TODO implement this
+    parser.add_argument('-w', '--weeks', type=int, help='print the number of hours worked in the last "w" weeks')
     parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
     args = parser.parse_args()
 
@@ -227,37 +247,40 @@ if __name__ == '__main__':
     count=0
     ordered_files = natsort.humansorted(all_files, reverse=True)
 
+    today = datetime.date.today()
+    one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
-        today = date.today()
-        one_day = timedelta(days=1)
-        dt = today - n_days * one_day
+        dt = today - n_days * one_day + one_day # get datetime object for (n_days - 1) days ago
         hours = []
-        weekend_days = 0
+        off_days = 0
         for _ in range(n_days):
             day = dt.strftime(DATE_FORMAT)
             worked_time = get_worked_time_for_strdate(day)
-            print(dt, dt.strftime('%a'), worked_time)
-            if dt.strftime("%a") in ["Sat", "Sun"]:
-                weekend_days+=1
+            print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
+            if is_weekend_or_vacation(dt):
+                off_days+=1
 
             hours.append(str_to_timedelta(worked_time))
             dt+=one_day
-        print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/(n_days-weekend_days)))
+        n_working_days = n_days-off_days  # TODO: this is wrong, as there may be days I did not work, but should have and there would be no files for them
+        print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/n_working_days))
         print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
-
-        # # example get all days since last monday
-        # last_monday = today + timedelta(days=-today.weekday())
-        # delta = today - last_monday
-        # for i in range(delta.days+1):
-        #    print(last_monday+timedelta(days=i))
 
         # # get date from string
         # datetime.datetime.strptime("2020-01-05", date_format).date()
+    elif args.weeks:
+        n_weeks = args.weeks
+        last_monday = today + timedelta(days=-today.weekday())
+        for w in range(n_weeks):
+            wk_monday = last_monday + timedelta(days=-7*w)
+            print("Mon", wk_monday, "- Sun", wk_monday+timedelta(days=+6))
+            wk_range = [(wk_monday + i*one_day) for i in range(7)]  # all days of the week from Monday to Sunday
+            wrk_hrs, ref_hrs, avg_per_day = calc_worked_time_in_date_range(wk_range)
+            print("%6s (ref %dh). Avg./work day: %5s" % (wrk_hrs, avg_per_day, ref_hrs))
 
     elif args.months:
         n_months = args.months
-        today = date.today()
         hours = []
         ref_hours = []
         for m in range(n_months):
@@ -266,7 +289,7 @@ if __name__ == '__main__':
             month_range = get_month_range(*curr_yr_mn)
             res = calc_worked_time_in_date_range(month_range)
 
-            print("%6s (ref %d). Avg./work day: %5s" % (res[0], res[2], res[1]))
+            print("%6s (ref %dh). Avg./work day: %5s" % (res[0], res[2], res[1]))
             hours.append(str_to_timedelta(res[0]))
             ref_hours.append(res[2])
 
@@ -288,5 +311,5 @@ if __name__ == '__main__':
                     print('\n')
                 count+=1
                 if count>=n_files:
-                    print('#### TOTAL ACCUMULATED TIME WORKED WAS ',  timedelta_to_str(cumulative_worked_time))
+                    print('#### TOTAL ACCUMULATED TIME WORKED WAS',  timedelta_to_str(cumulative_worked_time))
                     break
