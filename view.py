@@ -277,7 +277,7 @@ if __name__ == '__main__':
             print("Mon", wk_monday, "- Sun", wk_monday+timedelta(days=+6))
             wk_range = [(wk_monday + i*one_day) for i in range(7)]  # all days of the week from Monday to Sunday
             wrk_hrs, ref_hrs, avg_per_day = calc_worked_time_in_date_range(wk_range)
-            print("%6s (ref %dh). Avg./work day: %5s" % (wrk_hrs, avg_per_day, ref_hrs))
+            print("%6s (ref %dh). Avg. 1work/day: %5s" % (wrk_hrs, avg_per_day, ref_hrs))
 
     elif args.months:
         n_months = args.months
@@ -289,7 +289,7 @@ if __name__ == '__main__':
             month_range = get_month_range(*curr_yr_mn)
             res = calc_worked_time_in_date_range(month_range)
 
-            print("%6s (ref %dh). Avg./work day: %5s" % (res[0], res[2], res[1]))
+            print("%6s (ref %dh). Avg. work/day: %5s" % (res[0], res[2], res[1]))
             hours.append(str_to_timedelta(res[0]))
             ref_hours.append(res[2])
 
