@@ -74,7 +74,9 @@ def calc_total_work_time(daily_journal):
 
     try:  #TODO: remove also time counted towards "personal" attribution
         procrastination_idx = attributions.index('procrastination')
-        return total_work - str_to_timedelta(durations[procrastination_idx])
+        personal_idx = attributions.index('personal')
+        maiseducacao_idx = attributions.index('maiseducacao')
+        return total_work - str_to_timedelta(durations[procrastination_idx]) - str_to_timedelta(durations[personal_idx]) - str_to_timedelta(durations[maiseducacao_idx])
     except ValueError:
         return total_work
 
