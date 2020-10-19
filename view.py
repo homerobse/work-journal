@@ -10,7 +10,7 @@ import argparse
 import datetime
 from datetime import timedelta
 
-txt_format = '.txt'
+TXT_FORMAT = '.txt'
 utf8_encoding = "utf-8"
 DATE_FORMAT = "%Y-%m-%d"
 try:
@@ -53,6 +53,15 @@ def timedelta_to_str(td):
     return "%d:%02d" % (td.days*24 + td.seconds//3600, ((td.seconds // 60) % 60))
 
 
+def get_attribution_duration(attributions, durations, item):
+    try:
+        att_idx = attributions.index(item)
+        duration = str_to_timedelta(durations[att_idx])
+    except ValueError:
+        duration = str_to_timedelta("0:00")
+    return duration
+
+
 def calc_total_work_time(daily_journal):
     """
     Calculates amount of worked hours in the day
@@ -72,13 +81,11 @@ def calc_total_work_time(daily_journal):
     for dur in durations: 
         total_work += str_to_timedelta(dur)
 
-    try:  #TODO: remove also time counted towards "personal" attribution
-        procrastination_idx = attributions.index('procrastination')
-        personal_idx = attributions.index('personal')
-        maiseducacao_idx = attributions.index('maiseducacao')
-        return total_work - str_to_timedelta(durations[procrastination_idx]) - str_to_timedelta(durations[personal_idx]) - str_to_timedelta(durations[maiseducacao_idx])
-    except ValueError:
-        return total_work
+
+    procrastination_dur = get_attribution_duration(attributions, durations, "procrastination")
+    personal_dur = get_attribution_duration(attributions, durations, "personal")
+    maiseducacao_dur = get_attribution_duration(attributions, durations, "maiseducacao")
+    return total_work - procrastination_dur - personal_dur - maiseducacao_dur
 
 
 def get_worked_time_for_strdate(strdate):
@@ -87,7 +94,7 @@ def get_worked_time_for_strdate(strdate):
     :return (str) work_time (format HH:MM)
     """
     try:
-        with open(strdate+txt_format, 'r', encoding="utf-8") as f:
+        with open(strdate+TXT_FORMAT, 'r', encoding="utf-8") as f:
             text = f.read().strip()
             work_time = timedelta_to_str(calc_total_work_time(text))
     except FileNotFoundError as e:
@@ -125,11 +132,11 @@ def calc_worked_time_in_date_range(date_range):
     off_days = 0
     one_day = timedelta(days=1)
     for dt in date_range:
-        day = dt.strftime(DATE_FORMAT)
-        worked_time = get_worked_time_for_strdate(day)
         if is_weekend_or_vacation(dt):
             off_days+=1
 
+        day = dt.strftime(DATE_FORMAT)
+        worked_time = get_worked_time_for_strdate(day)
         hours.append(str_to_timedelta(worked_time))
         dt+=one_day
     n_working_days = len(date_range)-off_days
