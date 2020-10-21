@@ -1,5 +1,7 @@
 #!/home/homero/miniconda3/bin/python
 import os
+from os import path
+from os.path import dirname, abspath, join
 import sys
 import re
 import calendar
@@ -10,11 +12,13 @@ import argparse
 import datetime
 from datetime import timedelta
 
+WJ_FOLDER = dirname(abspath(__file__))  # Work-Journal project folder
+JOURNALS_FOLDER = dirname(WJ_FOLDER)
 TXT_FORMAT = '.txt'
-utf8_encoding = "utf-8"
+UTF8_ENCODING = "utf-8"
 DATE_FORMAT = "%Y-%m-%d"
 try:
-    with open("vacations", "r") as f:
+    with open(join(WJ_FOLDER, "vacations"), "r") as f:
         VACATIONS = f.read().splitlines()
 except FileNotFoundError as e:
     print("Please create a vacations text file.")
@@ -94,7 +98,7 @@ def get_worked_time_for_strdate(strdate):
     :return (str) work_time (format HH:MM)
     """
     try:
-        with open(strdate+TXT_FORMAT, 'r', encoding="utf-8") as f:
+        with open(strdate+TXT_FORMAT, 'r', encoding=UTF8_ENCODING) as f:
             text = f.read().strip()
             work_time = timedelta_to_str(calc_total_work_time(text))
     except FileNotFoundError as e:
@@ -224,10 +228,10 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
     args = parser.parse_args()
 
-    all_files = os.listdir()
+    all_files = os.listdir(JOURNALS_FOLDER)
 
     if args.n_files is None:
-        n_files = len(all_files)
+        n_files = len(all_files)  # default is scanning all files
     else:
         n_files = args.n_files
 
@@ -236,18 +240,6 @@ if __name__ == '__main__':
         test_get_nth_prev_month()
         print("If nothing was printed above, all tests succeeded")
         exit()
-
-    ## old parser begin ##
-    # if len(sys.argv)==1:
-    #    n_files = len(all_files)
-    # elif len(sys.argv)==2:
-    #    n_files = int(sys.argv[1])
-    # else:
-    #     MSG= """ERROR: Wrong number of parameters. Use either no parameters or just one integer as paramater: the number of files to print.
-    # USAGE: ./view.py N_FILES)"""
-    #     print(MSG)
-    #     exit()
-    ## old parser end ##
 
     # all_files.remove('view.py')
     # all_files.remove('this week')
@@ -310,7 +302,7 @@ if __name__ == '__main__':
         cumulative_worked_time = timedelta(seconds=0)
         for filename in ordered_files:
             if re.match('.*\.txt$', filename):
-                with open(filename, 'r', encoding=utf8_encoding) as f:
+                with open(join(JOURNALS_FOLDER, filename), 'r', encoding=UTF8_ENCODING) as f:
                 # with open(filename, 'r') as f:
                     text = f.read().strip()
                     work_time = calc_total_work_time(text)
