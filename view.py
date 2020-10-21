@@ -57,6 +57,13 @@ def timedelta_to_str(td):
 
 
 def get_attribution_duration(attributions, durations, item):
+    """
+    Get the duration of an attribution item
+    :param attributions: list of tags
+    :param duration: list of str durations of each attribution
+    :param (str) item: the specific attribution for which the duration should be extracted
+    :return: (str) duration in format HH:MM
+    """
     try:
         att_idx = attributions.index(item)
         duration = str_to_timedelta(durations[att_idx])

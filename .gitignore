@@ -1,6 +1,3 @@
-*
-!*.py
-!.gitignore
-!vacations.example
-!README.md
-
+.ipynb_checkpoints/
+__pycache__/
+vacations
