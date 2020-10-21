@@ -16,6 +16,7 @@ WJ_FOLDER = dirname(abspath(__file__))  # Work-Journal project folder
 JOURNALS_FOLDER = dirname(WJ_FOLDER)
 TXT_FORMAT = '.txt'
 UTF8_ENCODING = "utf-8"
+# iso_encoding = "ISO-8859-1"
 DATE_FORMAT = "%Y-%m-%d"
 try:
     with open(join(WJ_FOLDER, "vacations"), "r") as f:
@@ -23,8 +24,6 @@ try:
 except FileNotFoundError as e:
     print("Please create a vacations text file.")
     exit()
-
-# iso_encoding = "ISO-8859-1"
 
 
 def check_worktimes():  # not used yet
@@ -207,10 +206,12 @@ def test_calc_total_work_time():
     ^Tprocrastination=0:30
     ^Treading=5:20
     ^Tufrn=3:05
+    ^Tpersonal=0:10
+    ^Tmaiseducacao=0:15
 
     ^A10:25^L11:45
     ^A12:50^E17:30
-    ^S18:45^L21:40
+    ^S18:45^L22:15
     """
 
     work_time=calc_total_work_time(text)
