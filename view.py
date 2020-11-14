@@ -1,4 +1,4 @@
-#!/home/homero/miniconda3/bin/python
+#!/home/homero/software/miniconda3/bin/python
 import os
 from os import path
 from os.path import dirname, abspath, join
@@ -104,7 +104,7 @@ def get_worked_time_for_strdate(strdate):
     :return (str) work_time (format HH:MM)
     """
     try:
-        with open(strdate+TXT_FORMAT, 'r', encoding=UTF8_ENCODING) as f:
+        with open(join(JOURNALS_FOLDER, strdate+TXT_FORMAT), 'r', encoding=UTF8_ENCODING) as f:
             text = f.read().strip()
             work_time = timedelta_to_str(calc_total_work_time(text))
     except FileNotFoundError as e:
