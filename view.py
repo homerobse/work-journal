@@ -25,10 +25,30 @@ except FileNotFoundError as e:
     print("Please create a vacations text file.")
     exit()
 
+EXAMPLE_JOURNAL = """
+    * write down reward modulated learning rule and include sketch figure
+    * generate plot showing result of reward modulated learning for all layers
+    * finish neurodynamics chapter 3 -> partially done, read just section 3.3
 
-def check_worktimes():  # not used yet
-    with open('/home/homero/hd/Dropbox/oxford/journal/2019-5-13.txt', 'r') as f:
-        text = f.read()
+    done:
+    * testing markdown desktop editor vnote
+    * read neurodynamics section 3.3
+    * improve Cell class to get cell id using cell_session_id and folder name (fname)s
+    * trying to understand why the position tracking from mat doesn't match the whl file. And the starting value for the plot isn't matching the one intended
+
+    ^Tprocrastination=0:30
+    ^Treading=5:20
+    ^Tufrn=3:05
+    ^Tpersonal=0:10
+    ^Tmaiseducacao=0:15
+
+    ^A10:25^L11:45
+    ^A12:50^E17:30
+    ^S18:45^L22:15
+    """
+
+
+def check_worktimes(text):  # not used yet
     arrivals = re.findall('\^A(\d?\d:\d\d)', text)
     leavings = re.findall('\^L(\d?\d:\d\d)', text)
     start = re.findall('\^S(\d?\d:\d\d)', text)
@@ -199,29 +219,7 @@ def test_get_nth_prev_month():
 
 
 def test_calc_total_work_time():
-    text = """
-    * write down reward modulated learning rule and include sketch figure
-    * generate plot showing result of reward modulated learning for all layers
-    * finish neurodynamics chapter 3 -> partially done, read just section 3.3
-
-    done:
-    * testing markdown desktop editor vnote
-    * read neurodynamics section 3.3
-    * improve Cell class to get cell id using cell_session_id and folder name (fname)s
-    * trying to understand why the position tracking from mat doesn't match the whl file. And the starting value for the plot isn't matching the one intended
-
-    ^Tprocrastination=0:30
-    ^Treading=5:20
-    ^Tufrn=3:05
-    ^Tpersonal=0:10
-    ^Tmaiseducacao=0:15
-
-    ^A10:25^L11:45
-    ^A12:50^E17:30
-    ^S18:45^L22:15
-    """
-
-    work_time=calc_total_work_time(text)
+    work_time=calc_total_work_time(EXAMPLE_JOURNAL)
     ref_work_time=timedelta(hours=8, minutes=25)
     assert work_time==ref_work_time, 'Error! The amount of hours worked in this day was %s, not %s' % \
                                         (timedelta_to_str(ref_work_time), timedelta_to_str(work_time))
