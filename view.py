@@ -17,13 +17,22 @@ JOURNALS_FOLDER = dirname(WJ_FOLDER)
 TXT_FORMAT = '.txt'
 UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
-DATE_FORMAT = "%Y-%m-%d"
+DATE_FORMAT_YMD = "%Y-%m-%d"
+DATE_FORMAT_MD = "%m-%d"
+
 try:
     with open(join(WJ_FOLDER, "vacations"), "r") as f:
         VACATIONS = f.read().splitlines()
 except FileNotFoundError as e:
     print("Please create a vacations text file.")
     exit()
+try:
+    with open(join(WJ_FOLDER, "holidays"), "r") as f:
+        HOLIDAYS = f.read().splitlines()
+except FileNotFoundError as e:
+    print("Please create a holidays text file.")
+    exit()
+
 
 EXAMPLE_JOURNAL = """
     * write down reward modulated learning rule and include sketch figure
@@ -143,12 +152,12 @@ def get_month_range(year, month):
     return [datetime.date(year, month, day) for day in range(1, nb_days+1)]
 
 
-def is_weekend_or_vacation(date):
-    """ Check if given date is weekend or vacation. I.e. it is a day off.
+def is_day_off(date):
+    """ Check if given date is day off (i.e. weekend, holiday or vacation).
     :param (datetime.date) date
-    :return (bool) True if it is a date of a weekend of vacation, False if not.
+    :return (bool) True if it is a date of a day-off, False if not.
     """
-    return date.strftime("%a") in ["Sat", "Sun"] or date.strftime(DATE_FORMAT) in VACATIONS
+    return date.strftime("%a") in ["Sat", "Sun"] or date.strftime(DATE_FORMAT_YMD) in VACATIONS or date.strftime(DATE_FORMAT_MD) in HOLIDAYS
 
 
 def calc_worked_time_in_date_range(date_range):
@@ -162,10 +171,10 @@ def calc_worked_time_in_date_range(date_range):
     off_days = 0
     one_day = timedelta(days=1)
     for dt in date_range:
-        if is_weekend_or_vacation(dt):
+        if is_day_off(dt):
             off_days+=1
 
-        day = dt.strftime(DATE_FORMAT)
+        day = dt.strftime(DATE_FORMAT_YMD)
         worked_time = get_worked_time_for_strdate(day)
         hours.append(str_to_timedelta(worked_time))
         dt+=one_day
@@ -262,15 +271,15 @@ if __name__ == '__main__':
         hours = []
         off_days = 0
         for _ in range(n_days):
-            day = dt.strftime(DATE_FORMAT)
+            day = dt.strftime(DATE_FORMAT_YMD)
             worked_time = get_worked_time_for_strdate(day)
             print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
-            if is_weekend_or_vacation(dt):
+            if is_day_off(dt):
                 off_days+=1
 
             hours.append(str_to_timedelta(worked_time))
             dt+=one_day
-        n_working_days = n_days-off_days  # TODO: this is wrong, as there may be days I did not work, but should have and there would be no files for them
+        n_working_days = n_days-off_days  # TODO: this is imprecise/wrong, as there may be days I did not work when I should have done it. In this case, there would be no files for them, so `n_days` would be less than the number of working days.
         print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/n_working_days))
         print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
 
