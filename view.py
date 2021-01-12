@@ -78,7 +78,7 @@ def timedelta_to_str(td):
     """
     Convert from timedelta to string of format hours:minutes
     :param td: timedelta
-    :return: hours:minutes
+    :return: (str) hours:minutes
     """
     # the minutes are calculated by getting the quotient of how many total minutes there are, and then getting just the remainder in the division by
     # 60, because the hours are already accounted in the first term of the ordinate pair
@@ -164,6 +164,7 @@ def calc_worked_time_in_date_range(date_range):
     """
     Note: *27/Feb/2019 was when I first started taking note of the amount of hours dedicated to each activity
     * 14/Mar/2019 was when I first started taking note of the hours of start and end of work
+    :param date_range: list of dates
     :return (total worked hours, average worked hours per working day,
         reference number of hours for 8h working days)
     """
@@ -202,6 +203,7 @@ def get_nth_prev_month(curr_yr, curr_mn, nb_mn):
         mn = 1 + r
     return yr, mn
 
+### tests
 
 def test_get_nth_prev_month():
     curr_yr = 2020
@@ -234,6 +236,7 @@ def test_calc_total_work_time():
     ref_work_time=timedelta(hours=8, minutes=25)
     assert work_time==ref_work_time, 'Error! The amount of hours worked in this day was %s, not %s' % \
                                         (timedelta_to_str(ref_work_time), timedelta_to_str(work_time))
+
 
 
 if __name__ == '__main__':
