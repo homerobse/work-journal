@@ -60,9 +60,9 @@ EXAMPLE_JOURNAL = """
 def check_worktimes(text):  # not used yet
     arrivals = re.findall('\^A(\d?\d:\d\d)', text)
     leavings = re.findall('\^L(\d?\d:\d\d)', text)
-    start = re.findall('\^S(\d?\d:\d\d)', text)
-    end = re.findall('\^E(\d?\d:\d\d)', text)
-    return arrivals, leavings, start, end
+    starts = re.findall('\^S(\d?\d:\d\d)', text)
+    ends = re.findall('\^E(\d?\d:\d\d)', text)
+    return arrivals, leavings, starts, ends
 
 
 def str_to_timedelta(time_str):
@@ -117,7 +117,7 @@ def calc_total_work_time(daily_journal):
         durations.append(item[1])
 
     total_work = timedelta(seconds=0)
-    for dur in durations: 
+    for dur in durations:
         total_work += str_to_timedelta(dur)
 
 
@@ -179,6 +179,8 @@ def calc_worked_time_in_date_range(date_range):
         hours.append(str_to_timedelta(worked_time))
         dt+=one_day
     n_working_days = len(date_range)-off_days
+    if n_working_days == 0:
+        n_working_days = 0.01
     return timedelta_to_str(np.sum(hours)), timedelta_to_str(np.sum(hours)/n_working_days), \
         n_working_days*8
 
