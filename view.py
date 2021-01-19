@@ -13,7 +13,7 @@ import datetime
 from datetime import timedelta
 
 WJ_FOLDER = dirname(abspath(__file__))  # Work-Journal project folder
-JOURNALS_FOLDER = dirname(WJ_FOLDER)
+JOURNALS_FOLDER = dirname(WJ_FOLDER)  # parent folder where daily journals are stored in .txt format
 TXT_FORMAT = '.txt'
 UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
@@ -104,9 +104,10 @@ def get_attribution_duration(attributions, durations, item):
 def calc_total_work_time(daily_journal):
     """
     Calculates amount of worked hours in the day
-    :param daily_journal: daily journal string
+    :param daily_journal: daily journal string containing text (todo's and done) and the time tags (e.g. ^Tuniversity_project=2:00, ^S8:30, ^E18:00, etc.)
     :return: timedelta of amount of worked hours
     """
+    # TODO: include try/except for when the file does not contain the time tags below.
     duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
 
 
