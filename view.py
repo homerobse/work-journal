@@ -328,7 +328,9 @@ if __name__ == '__main__':
                     text = f.read().strip()
                     work_time = calc_total_work_time(text)
                     cumulative_worked_time += work_time
-                    print('========================', filename, '- Time Worked -', timedelta_to_str(work_time), '========================\n')
+                    str_date = filename.split(".")[0]
+                    dt = datetime.datetime.strptime(str_date,"%Y-%m-%d").date()
+                    print('========================', dt.strftime('%a'), str_date, '- Time Worked -', timedelta_to_str(work_time), '========================\n')
                     print(text)
                     print('\n')
                 count+=1
