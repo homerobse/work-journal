@@ -7,6 +7,8 @@ import re
 import calendar
 
 import numpy as np
+from numpy import array, where
+import matplotlib.pyplot as plt
 import natsort
 import argparse
 import datetime
@@ -19,6 +21,12 @@ UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
+TAGS = ["ucsd_mattarlab_mouse-maze", "ucsd_sejnowskilab", "ucsd_mattarlab_proj", "ucsd_proj", # research
+          "ucsd_class", "ucsd_course", "ucsd_book-club", "ucsd_yu-jc", "ucsd_talk",  # courses
+          "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
+          "sideways-investigation",
+          "rest", "personal", "procrastination", "maiseducacao"]  # non-productive
+#TODO: create a structure that accounts for the different types of work
 
 try:
     with open(join(WJ_FOLDER, "vacations"), "r") as f:
@@ -101,6 +109,101 @@ def get_attribution_duration(attributions, durations, item):
     return duration
 
 
+def consolidate_attributions_and_durations_lists(attributions_lists, durations_lists):
+    """Consolidates several attributions lists and their corresponding duration 
+    lists into a single attribution list and its corresponding duration list
+    """
+    all_attributions = []
+    all_durations = []
+
+    for att_l_idx, att_list in enumerate(attributions_lists):  # att_l_idx indexes the day corresponding to the attribution list
+        for it_idx, it in enumerate(att_list):  # for each item in that attribution list
+            try:  # if the current item (it) is already in the all_attribution list
+                idx = all_attributions.index(it)
+                it_dur = durations_lists[att_l_idx][it_idx]
+                all_durations[idx] += str_to_timedelta(it_dur)
+#                 print("try", all_attributions, all_durations)
+            except ValueError:  #  else
+                all_attributions.append(it)
+                it_dur = durations_lists[att_l_idx][it_idx]
+                all_durations.append(str_to_timedelta(it_dur))
+#                 print("except", all_attributions, all_durations)
+
+    return all_attributions, all_durations
+
+
+def get_week_range(day):
+    """Get all days in a week. Starting from Monday, ending in Sunday
+    :param (datetime.date) day
+    :return: list of datetime.dates"""
+    str_input_date = day.strftime(DATE_FORMAT_YMD)
+
+    input_date = datetime.datetime.strptime(str_input_date, DATE_FORMAT_YMD).date()
+    weeks = 1
+
+    one_day = timedelta(days=1)
+    last_monday = input_date + timedelta(days=-input_date.weekday())  # takes the monday before the given date
+    for w in range(weeks):
+        wk_monday = last_monday + timedelta(days=-7*w)
+#         print("Mon", wk_monday, "- Sun", wk_monday+timedelta(days=+6))
+        wk_range = [(wk_monday + i*one_day) for i in range(7)] 
+    return wk_range
+
+
+def get_attributions_and_durations(strdate):
+    """
+    Get attributions and their durations for the given strdate
+    strdate: date of the day from which to get the attributions and their durations
+    return: attributions list, and a durations list
+    """
+    try:
+        with open(join(JOURNALS_FOLDER, strdate+TXT_FORMAT), 'r', encoding=UTF8_ENCODING) as f:
+            daily_journal = f.read().strip()
+    except FileNotFoundError as e:
+        # if file is not found, return empty lists
+        return [],[]
+
+    duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
+
+    attributions = []
+    durations = []                                                                                                                                                                                      
+    for item in duration_attribution_list:
+        attributions.append(item[0])
+        durations.append(item[1])
+    
+    return attributions, durations
+
+
+def get_attributions_and_durations_from_range(strdate_range):
+    """
+    Get week for which day `dt` (datetime.date) belongs and return consolidated attributions and corresponding durations
+    :param strdate_range: list of dates
+    :return: atts: list of attributions 
+             durs_in_h (list of float): duration in hours
+    """
+    attributions_lists = []
+    durations_lists = []
+    for day in str_wk_range:
+        attributions, durations = get_attributions_and_durations(day)
+        attributions_lists.append(attributions)
+        durations_lists.append(durations)
+    atts, durs = consolidate_attributions_and_durations_lists(attributions_lists, durations_lists)
+    durs_in_h = array([dur.seconds/3600 for dur in durs])
+    return atts, durs_in_h
+
+    
+def plot_wk_all_activities(atts, durs_in_h, str_monday, str_sunday):
+    plt.figure(figsize=(15,5))
+    plt.bar(range(len(durs_in_h)), durs_in_h, tick_label=atts)
+    plt.xticks(rotation=-45, ha="left");
+    plt.ylabel("Hours")
+    str_monday = str_wk_range[0]
+    str_sunday = str_wk_range[-1]
+    plt.title("Week Mon %s - Sun %s: %.1fh logged" % (str_monday, str_sunday, sum(durs_in_h)))
+    plt.tight_layout()
+    return plt.gcf(), plt.gca()
+
+
 def calc_total_work_time(daily_journal):
     """
     Calculates amount of worked hours in the day
@@ -126,6 +229,54 @@ def calc_total_work_time(daily_journal):
     personal_dur = get_attribution_duration(attributions, durations, "personal")
     maiseducacao_dur = get_attribution_duration(attributions, durations, "maiseducacao")
     return total_work - procrastination_dur - personal_dur - maiseducacao_dur
+
+
+def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
+    tag_durs = []
+    for tag in tags:  # for each tag match with attributions and sum durations
+    #     print(tag)
+        match_indices = []
+        for i_att, att in enumerate(atts):  # TODO: rename atts to atts_in_date_range
+            match_indices.append(i_att) if re.search(tag, att) else None
+        match_indices = array(match_indices)
+    #     print(match_indices)
+
+        if len(match_indices)>0:
+            tag_durs.append(sum(durs_in_h[match_indices]))  # sum all attribution durations of attributions matching current tag
+        else:
+            tag_durs.append(0)
+
+    # others
+    others = []
+    others_durs = []
+    for i_att, att in enumerate(atts):  # sum durations for all other tags
+        no_matching_tag = True
+        for tag in tags:  # check if there is a tag that matches the current attribution
+            if re.search(tag, att):
+                no_matching_tag = False
+        if no_matching_tag:
+            others.append(att)
+            others_durs.append(durs_in_h[i_att])
+
+    # print(others)
+    # print(others_durs)
+
+    #  remove bars of items with zero hours
+    non_zero_idxs = where(array(tag_durs)!=0)
+    non_zero_tags = array(tags)[non_zero_idxs]
+    non_zero_durs = array(tag_durs)[non_zero_idxs]
+
+    # match_indices#, tag_durs
+    plt.figure(figsize=(15,5))
+    plt.bar(range(len(non_zero_tags)+1), list(non_zero_durs)+[sum(others_durs)], tick_label=list(non_zero_tags)+[str(others)])
+    # plt.bar(range(len(tag_durs)+1), [dur for dur in tag_durs]+[sum(others_durs)], tick_label=TAGS+[str(others)])
+    plt.xticks(rotation=-45, ha="left");
+    plt.ylabel("Hours")
+    str_monday = str_wk_range[0]
+    str_sunday = str_wk_range[-1]
+    # plt.title("Week Mon %s - Sun %s" % (str_monday, str_sunday))
+    plt.title("Week Mon %s - Sun %s: %.1fh logged" % (str_monday, str_sunday, sum(durs_in_h)))
+    plt.tight_layout()
 
 
 def get_worked_time_for_strdate(strdate):
@@ -247,6 +398,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
     parser.add_argument('-w', '--weeks', type=int, help='print the number of hours worked in the last "w" weeks')
     parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
+    parser.add_argument('-p', '--plot', help='plot all week activities.', action='store_true')
+    parser.add_argument('-g', '--group', help='plot all week activities grouped per tags.', action='store_true')
     args = parser.parse_args()
 
     all_files = os.listdir(JOURNALS_FOLDER)
@@ -318,7 +471,14 @@ if __name__ == '__main__':
         print("***")
         print("Actual      ", timedelta_to_str(np.sum(hours)))
         print("REF (8h/day)", np.sum(ref_hours))
-
+    elif args.group or args.plot:
+        target_day = datetime.date.today()
+        str_wk_range = [str(day) for day in get_week_range(target_day)]
+        atts, durs_in_h = get_attributions_and_durations_from_range(str_wk_range)
+        
+        if args.group: aggregate_att_hours_and_plot(TAGS, atts, durs_in_h)
+        else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
+        plt.show()
     else:
         cumulative_worked_time = timedelta(seconds=0)
         for filename in ordered_files:
