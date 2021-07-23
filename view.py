@@ -419,8 +419,6 @@ if __name__ == '__main__':
     # all_files.remove('this week')
     # all_files.remove('worth-readings')
     # all_files.remove
-    count=0
-    ordered_files = natsort.humansorted(all_files, reverse=True)
 
     today = datetime.date.today()
     one_day = timedelta(days=1)
@@ -480,7 +478,9 @@ if __name__ == '__main__':
         else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
         plt.show()
     else:
+        count=0
         cumulative_worked_time = timedelta(seconds=0)
+        ordered_files = natsort.humansorted(all_files, reverse=True)
         for filename in ordered_files:
             if re.match('.*\.txt$', filename):
                 with open(join(JOURNALS_FOLDER, filename), 'r', encoding=UTF8_ENCODING) as f:
