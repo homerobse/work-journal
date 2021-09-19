@@ -22,11 +22,13 @@ UTF8_ENCODING = "utf-8"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
 TAGS = ["ucsd_mattarlab_mouse-maze", "ucsd_sejnowskilab", "ucsd_mattarlab_proj", "ucsd_proj", # research
-          "ucsd_class", "ucsd_course", "ucsd_book-club", "ucsd_yu-jc", "ucsd_talk",  # courses
+          "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
+          "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
           "sideways-investigation",
-          "rest", "personal", "procrastination", "maiseducacao"]  # non-productive
-#TODO: create a structure that accounts for the different types of work
+          "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-productive
+# Anything not included in the TAGS list will be listed together
+#TODO: create a structure that accounts for the different types of work, i.e. has in it some separation like I did in the comments
 
 try:
     with open(join(WJ_FOLDER, "vacations"), "r") as f:
@@ -235,7 +237,7 @@ def calc_total_work_time(daily_journal):
 
 def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
     tag_durs = []
-    for tag in tags:  # for each tag match with attributions and sum durations
+    for tag in tags:  # for each tag search for it in attributions, then sum the tag's duration
     #     print(tag)
         match_indices = []
         for i_att, att in enumerate(atts):  # TODO: rename atts to atts_in_date_range
@@ -248,12 +250,12 @@ def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
         else:
             tag_durs.append(0)
 
-    # others
+    # others (any attributions not listed in tags)
     others = []
     others_durs = []
     for i_att, att in enumerate(atts):  # sum durations for all other tags
         no_matching_tag = True
-        for tag in tags:  # check if there is a tag that matches the current attribution
+        for tag in tags:  # check if there is a tag that matches the current attribution #TODO: this is not efficient, since the same search has been done above. Would be better to just use this order of loop (first on atts then on tags)
             if re.search(tag, att):
                 no_matching_tag = False
         if no_matching_tag:
@@ -400,8 +402,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
     parser.add_argument('-w', '--weeks', type=int, help='print the number of hours worked in the last "w" weeks')
     parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
-    parser.add_argument('-p', '--plot', help='plot all week activities.', action='store_true')
-    parser.add_argument('-g', '--group', help='plot all week activities grouped per tags.', action='store_true')
+    parser.add_argument('-p', '--plot', help='plot all activities of the current week.', action='store_true')
+    parser.add_argument('-g', '--group', help='plot all activities of the current week grouped by tags.', action='store_true')
     args = parser.parse_args()
 
     all_files = os.listdir(JOURNALS_FOLDER)
