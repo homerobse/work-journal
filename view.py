@@ -58,6 +58,7 @@ EXAMPLE_JOURNAL = """
     ^Tufrn=3:05
     ^Tpersonal=0:10
     ^Tmaiseducacao=0:15
+    ^Ttrustedcrowd=1:00
 
     ^A10:25^L11:45
     ^A12:50^E17:30
@@ -228,7 +229,8 @@ def calc_total_work_time(daily_journal):
     procrastination_dur = get_attribution_duration(attributions, durations, "procrastination")
     personal_dur = get_attribution_duration(attributions, durations, "personal")
     maiseducacao_dur = get_attribution_duration(attributions, durations, "maiseducacao")
-    return total_work - procrastination_dur - personal_dur - maiseducacao_dur
+    trustedcrowd_dur = get_attribution_duration(attributions, durations, "trustedcrowd")
+    return total_work - procrastination_dur - personal_dur - maiseducacao_dur - trustedcrowd_dur
 
 
 def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
