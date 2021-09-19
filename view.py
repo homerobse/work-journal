@@ -30,19 +30,29 @@ TAGS = ["ucsd_mattarlab_mouse-maze", "ucsd_sejnowskilab", "ucsd_mattarlab_proj",
 # Anything not included in the TAGS list will be listed together
 #TODO: create a structure that accounts for the different types of work, i.e. has in it some separation like I did in the comments
 
+def read_txt_file_and_exclude_comments(filename):
+    with open(filename, "r") as f:
+        linelist = f.read().splitlines()
+        linelist_wo_comments = []
+        for line in linelist:
+            if line.startswith("#"):
+                pass
+            elif "#" in line:
+                linelist_wo_comments.append(line.split("#")[0].strip())
+            else:
+                linelist_wo_comments.append(line.strip())
+    return linelist_wo_comments
+
 try:
-    with open(join(WJ_FOLDER, "vacations"), "r") as f:
-        VACATIONS = f.read().splitlines()
+    VACATIONS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "vacations"))
 except FileNotFoundError as e:
     print("Please create a vacations text file.")
     exit()
 try:
-    with open(join(WJ_FOLDER, "holidays"), "r") as f:
-        HOLIDAYS = f.read().splitlines()
+    HOLIDAYS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "holidays"))
 except FileNotFoundError as e:
     print("Please create a holidays text file.")
     exit()
-
 
 EXAMPLE_JOURNAL = """
     * write down reward modulated learning rule and include sketch figure
