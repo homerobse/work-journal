@@ -21,9 +21,9 @@ UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
-TAGS = ["ucsd_mattarlab_mouse-maze", "ucsd_sejnowskilab", "ucsd_mattarlab_proj", "ucsd_proj", # research
+TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", "ucsd_mattarlab_mouse-maze", # research
           "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
-          "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", # reading group
+          "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
           "sideways-investigation",
           "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-productive
@@ -196,7 +196,7 @@ def get_attributions_and_durations_from_range(strdate_range):
     """
     attributions_lists = []
     durations_lists = []
-    for day in str_wk_range:
+    for day in strdate_range:
         attributions, durations = get_attributions_and_durations(day)
         attributions_lists.append(attributions)
         durations_lists.append(durations)
@@ -210,8 +210,6 @@ def plot_wk_all_activities(atts, durs_in_h, str_monday, str_sunday):
     plt.bar(range(len(durs_in_h)), durs_in_h, tick_label=atts)
     plt.xticks(rotation=-45, ha="left");
     plt.ylabel("Hours")
-    str_monday = str_wk_range[0]
-    str_sunday = str_wk_range[-1]
     plt.title("Week Mon %s - Sun %s: %.1fh logged" % (str_monday, str_sunday, sum(durs_in_h)))
     plt.tight_layout()
     return plt.gcf(), plt.gca()
@@ -245,12 +243,12 @@ def calc_total_work_time(daily_journal):
     return total_work - procrastination_dur - personal_dur - maiseducacao_dur - trustedcrowd_dur
 
 
-def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
+def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle=""):
     tag_durs = []
     for tag in tags:  # for each tag search for it in attributions, then sum the tag's duration
     #     print(tag)
         match_indices = []
-        for i_att, att in enumerate(atts):  # TODO: rename atts to atts_in_date_range
+        for i_att, att in enumerate(atts_in_date_range):
             match_indices.append(i_att) if re.search(tag, att) else None
         match_indices = array(match_indices)
     #     print(match_indices)
@@ -263,7 +261,7 @@ def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
     # others (any attributions not listed in tags)
     others = []
     others_durs = []
-    for i_att, att in enumerate(atts):  # sum durations for all other tags
+    for i_att, att in enumerate(atts_in_date_range):  # sum durations for all other tags
         no_matching_tag = True
         for tag in tags:  # check if there is a tag that matches the current attribution #TODO: this is not efficient, since the same search has been done above. Would be better to just use this order of loop (first on atts then on tags)
             if re.search(tag, att):
@@ -282,14 +280,12 @@ def aggregate_att_hours_and_plot(tags, atts, durs_in_h):
 
     # match_indices#, tag_durs
     plt.figure(figsize=(15,5))
-    plt.bar(range(len(non_zero_tags)+1), list(non_zero_durs)+[sum(others_durs)], tick_label=list(non_zero_tags)+[str(others)])
+    plt.bar(range(len(non_zero_tags)+1), list(non_zero_durs)+[sum(others_durs)], tick_label=list(non_zero_tags)+["Others"] if len(others)>0 else [])
     # plt.bar(range(len(tag_durs)+1), [dur for dur in tag_durs]+[sum(others_durs)], tick_label=TAGS+[str(others)])
-    plt.xticks(rotation=-45, ha="left");
+    plt.xticks(rotation=-45, ha="left")
+    plt.xlabel("Others: %s" % str(others))
     plt.ylabel("Hours")
-    str_monday = str_wk_range[0]
-    str_sunday = str_wk_range[-1]
-    # plt.title("Week Mon %s - Sun %s" % (str_monday, str_sunday))
-    plt.title("Week Mon %s - Sun %s: %.1fh logged" % (str_monday, str_sunday, sum(durs_in_h)))
+    plt.title(figtitle)
     plt.tight_layout()
 
 
@@ -454,6 +450,15 @@ if __name__ == '__main__':
         print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/n_working_days))
         print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
 
+        # and plot aggregate plot for the week
+        target_day = datetime.date.today()
+        str_wk_range = [str(day) for day in get_week_range(target_day)]
+        atts, durs_in_h = get_attributions_and_durations_from_range(str_wk_range)
+
+        figtitle = "Week Mon %s - Sun %s: %.1fh logged" % (str_wk_range[0], str_wk_range[-1], sum(durs_in_h))
+        aggregate_att_hours_and_plot(TAGS, atts, durs_in_h, figtitle)
+        plt.show()
+
         # # get date from string
         # datetime.datetime.strptime("2020-01-05", date_format).date()
     elif args.weeks:
@@ -487,8 +492,9 @@ if __name__ == '__main__':
         target_day = datetime.date.today()
         str_wk_range = [str(day) for day in get_week_range(target_day)]
         atts, durs_in_h = get_attributions_and_durations_from_range(str_wk_range)
-        
-        if args.group: aggregate_att_hours_and_plot(TAGS, atts, durs_in_h)
+
+        figtitle = "Week Mon %s - Sun %s: %.1fh logged" % (str_wk_range[0], str_wk_range[-1], sum(durs_in_h))
+        if args.group: aggregate_att_hours_and_plot(TAGS, atts, durs_in_h, figtitle)
         else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
         plt.show()
     else:
