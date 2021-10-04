@@ -79,11 +79,14 @@ EXAMPLE_JOURNAL = """
 
 
 def check_worktimes(text):  # not used yet
-    arrivals = re.findall('\^A(\d?\d:\d\d)', text)
-    leavings = re.findall('\^L(\d?\d:\d\d)', text)
-    starts = re.findall('\^S(\d?\d:\d\d)', text)
-    ends = re.findall('\^E(\d?\d:\d\d)', text)
-    return arrivals, leavings, starts, ends
+#     arrivals = re.findall('\^A(\d?\d:\d\d)', text)
+#     leavings = re.findall('\^L(\d?\d:\d\d)', text)
+#     starts = re.findall('\^S(\d?\d:\d\d)', text)
+#     ends = re.findall('\^E(\d?\d:\d\d)', text)
+#     return arrivals, leavings, starts, ends
+    starts = re.findall('\^[SA](\d?\d:\d\d)', text)
+    ends = re.findall('\^[EL](\d?\d:\d\d)', text)
+    return starts, ends
 
 
 def str_to_timedelta(time_str):
@@ -159,7 +162,7 @@ def get_week_range(day):
     for w in range(weeks):
         wk_monday = last_monday + timedelta(days=-7*w)
 #         print("Mon", wk_monday, "- Sun", wk_monday+timedelta(days=+6))
-        wk_range = [(wk_monday + i*one_day) for i in range(7)] 
+        wk_range = [(wk_monday + i*one_day) for i in range(7)] # all days of the week from Monday to Sunday
     return wk_range
 
 
