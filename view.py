@@ -247,6 +247,7 @@ def calc_total_work_time(daily_journal):
 
 
 def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle=""):
+    #  TODO: this is currently mixing up ucsd_ta and ucsd_talk. FIXIT!
     tag_durs = []
     for tag in tags:  # for each tag search for it in attributions, then sum the tag's duration
     #     print(tag)
@@ -289,6 +290,8 @@ def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle="
     plt.xlabel("Others: %s" % str(others))
     plt.ylabel("Hours")
     plt.title(figtitle)
+    plt.grid(axis="y", zorder=0)
+    plt.gca().set_axisbelow(True)
     plt.tight_layout()
 
 
