@@ -247,29 +247,23 @@ def calc_total_work_time(daily_journal):
 
 
 def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle=""):
-    #  TODO: this is currently mixing up ucsd_ta and ucsd_talk. FIXIT!
-    tag_durs = []
-    for tag in tags:  # for each tag search for it in attributions, then sum the tag's duration
-    #     print(tag)
-        match_indices = []
-        for i_att, att in enumerate(atts_in_date_range):
-            match_indices.append(i_att) if re.search(tag, att) else None
-        match_indices = array(match_indices)
-    #     print(match_indices)
-
-        if len(match_indices)>0:
-            tag_durs.append(sum(durs_in_h[match_indices]))  # sum all attribution durations of attributions matching current tag
-        else:
-            tag_durs.append(0)
-
-    # others (any attributions not listed in tags)
-    others = []
+    """
+    tags (list of str): list of categories
+    atts_in_date_range (list of str): attributions 
+    durs_in_h(array? or list?): durations worked on each of the attributions  #TODO: check if it is array or list
+    """
+    others = []  # others (any attributions not listed in tags)
     others_durs = []
+    tag_durs = np.zeros(len(tags))
     for i_att, att in enumerate(atts_in_date_range):  # sum durations for all other tags
         no_matching_tag = True
-        for tag in tags:  # check if there is a tag that matches the current attribution #TODO: this is not efficient, since the same search has been done above. Would be better to just use this order of loop (first on atts then on tags)
-            if re.search(tag, att):
+        for i_tag, tag in enumerate(tags):  # check if there is a tag that matches the current attribution #TODO: this is not efficient, since the same search has been done above. Would be better to just use this order of loop (first on atts then on tags)
+            regex = "(%s)_|(%s)$" % (tag, tag)   # match if it is followed by an underscore or nothing else ($ represents the end of the string)
+            if re.match(regex, att):
                 no_matching_tag = False
+                tag_durs[i_tag]+=durs_in_h[i_att]
+                break
+
         if no_matching_tag:
             others.append(att)
             others_durs.append(durs_in_h[i_att])
@@ -282,7 +276,6 @@ def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle="
     non_zero_tags = array(tags)[non_zero_idxs]
     non_zero_durs = array(tag_durs)[non_zero_idxs]
 
-    # match_indices#, tag_durs
     plt.figure(figsize=(15,5))
     plt.bar(range(len(non_zero_tags)+1), list(non_zero_durs)+[sum(others_durs)], tick_label=list(non_zero_tags)+["Others"] if len(others)>0 else [])
     # plt.bar(range(len(tag_durs)+1), [dur for dur in tag_durs]+[sum(others_durs)], tick_label=TAGS+[str(others)])
