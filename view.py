@@ -1,4 +1,5 @@
 #!/home/homero/software/miniconda3/bin/python
+# TODO: fix plot of the aggregate work hours when I run wj.sh -c 14 (for two weeks). The number of hours is completely off.
 import os
 from os import path
 from os.path import dirname, abspath, join
@@ -27,7 +28,7 @@ TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattar
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
           "sideways-investigation",
           "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-productive
-# Anything not included in the TAGS list will be listed together
+# Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
 #TODO: create a structure that accounts for the different types of work, i.e. has in it some separation like I did in the comments
 
 def read_txt_file_and_exclude_comments(filename):
@@ -250,7 +251,7 @@ def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle="
     """
     tags (list of str): list of categories
     atts_in_date_range (list of str): attributions 
-    durs_in_h(array? or list?): durations worked on each of the attributions  #TODO: check if it is array or list
+    durs_in_h(ndarray): durations worked on each of the attributions  #TODO: check if it is array or list
     """
     others = []  # others (any attributions not listed in tags)
     others_durs = []
@@ -277,7 +278,10 @@ def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle="
     non_zero_durs = array(tag_durs)[non_zero_idxs]
 
     plt.figure(figsize=(15,5))
-    plt.bar(range(len(non_zero_tags)+1), list(non_zero_durs)+[sum(others_durs)], tick_label=list(non_zero_tags)+["Others"] if len(others)>0 else [])
+    all_durs = list(non_zero_durs)+[sum(others_durs)]
+    all_tags = list(non_zero_tags)+["Others"] if len(others)>0 else []
+    positions = range(len(non_zero_tags)+1)
+    plt.bar(positions, all_durs, tick_label=all_tags)
     # plt.bar(range(len(tag_durs)+1), [dur for dur in tag_durs]+[sum(others_durs)], tick_label=TAGS+[str(others)])
     plt.xticks(rotation=-45, ha="left")
     plt.xlabel("Others: %s" % str(others))
@@ -433,11 +437,16 @@ if __name__ == '__main__':
     one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
-        dt = today - n_days * one_day + one_day # get datetime object for (n_days - 1) days ago
+        dt = today - (n_days-1) * one_day  # get datetime object for (n_days - 1) days ago (i.e. start from today and goes back in time)
         hours = []
         off_days = 0
+        str_period_range = []
+        period_range = []
+        # get worked time for each day and set variables used for calculating average daily work
         for _ in range(n_days):
             day = dt.strftime(DATE_FORMAT_YMD)
+            str_period_range.append(day)  # used for plotting below
+            period_range.append(dt)  # used for plotting below
             worked_time = get_worked_time_for_strdate(day)
             print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
             if is_day_off(dt):
@@ -450,11 +459,10 @@ if __name__ == '__main__':
         print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
 
         # and plot aggregate plot for the week
-        target_day = datetime.date.today()
-        str_wk_range = [str(day) for day in get_week_range(target_day)]
-        atts, durs_in_h = get_attributions_and_durations_from_range(str_wk_range)
+        atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
 
-        figtitle = "Week Mon %s - Sun %s: %.1fh logged" % (str_wk_range[0], str_wk_range[-1], sum(durs_in_h))
+        figtitle = "Period from %s %s to %s %s: %.1fh logged" % (period_range[0].strftime('%a'), 
+            str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
         aggregate_att_hours_and_plot(TAGS, atts, durs_in_h, figtitle)
         plt.show()
 
