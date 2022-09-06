@@ -8,3 +8,4 @@
 09-06  # us labor day
 01-17  # Martin Luther King Jr day
 02-21  # Presidents day
+06-20  # Juneteenth
