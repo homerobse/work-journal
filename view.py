@@ -38,19 +38,19 @@ def read_txt_file_and_exclude_comments(filename):
         for line in linelist:
             if line.startswith("#"):
                 pass
-            elif "#" in line:
+            elif "#" in line:  # ignores everything after # symbol
                 linelist_wo_comments.append(line.split("#")[0].strip())
             else:
                 linelist_wo_comments.append(line.strip())
     return linelist_wo_comments
 
 try:
-    VACATIONS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "vacations"))
+    VACATIONS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "vacations.txt"))
 except FileNotFoundError as e:
     print("Please create a vacations text file.")
     exit()
 try:
-    HOLIDAYS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "holidays"))
+    HOLIDAYS = read_txt_file_and_exclude_comments(join(WJ_FOLDER, "holidays.txt"))
 except FileNotFoundError as e:
     print("Please create a holidays text file.")
     exit()
@@ -346,7 +346,7 @@ def calc_worked_time_in_date_range(date_range):
         dt+=one_day
     n_working_days = len(date_range)-off_days
     if n_working_days == 0:
-        n_working_days = 0.01
+        n_working_days = 0.01  # avoid division by zero
     return timedelta_to_str(np.sum(hours)), timedelta_to_str(np.sum(hours)/n_working_days), \
         n_working_days*8
 
@@ -493,8 +493,8 @@ if __name__ == '__main__':
             ref_hours.append(res[2])
 
         print("***")
-        print("Actual      ", timedelta_to_str(np.sum(hours)))
-        print("REF (8h/day)", np.sum(ref_hours))
+        print("Actual                   |", timedelta_to_str(np.sum(hours)))
+        print("REF (8h per working day) |", np.sum(ref_hours))
     elif args.group or args.plot:
         target_day = datetime.date.today()
         str_wk_range = [str(day) for day in get_week_range(target_day)]
