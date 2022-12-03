@@ -22,7 +22,8 @@ UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
-TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", "ucsd_mattarlab_mouse-maze", "oxford_ti", # research
+TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", # research
+          "ucsd_mattarlab_mouse-maze", "oxford_ti", # research
           "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
           "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
