@@ -1,0 +1,6 @@
+#!/bin/bash
+for f in *.txt; do
+   sed -i.bak 's/oldtag/newtag/' $f
+done
+
+# I still need to figure out how to change multiple files, check https://stackoverflow.com/questions/10445934/change-multiple-files
