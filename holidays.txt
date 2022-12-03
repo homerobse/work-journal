@@ -5,7 +5,9 @@
 12-25
 # new year
 12-31
-09-06  # us labor day
+09-06  # us labor day, in 2022 it was on 09-05 TODO: adapt code to be year specific
 01-17  # Martin Luther King Jr day
 02-21  # Presidents day
 06-20  # Juneteenth
+11-24  # Thanksgiving 2022
+11-25  # Thanksgiving 2022
