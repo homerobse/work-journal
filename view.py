@@ -472,6 +472,11 @@ if __name__ == '__main__':
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
         h_research = np.array(all_durs)[np.logical_or(np.logical_or(np.array(all_tags)=='ucsd_mattarlab_seqs',
             np.array(all_tags)=='ucsd_sejnowskilab_recirculation'), np.array(all_tags)=='ucsd_jerniganlab_mixture')].sum()
+        ## the code below shall be useful to extend the sum of research hours for all research items, instead of only these 3, without 
+        ## having to nest multiple logical_or
+        # research_idxs = []
+        # for i in ['ucsd_mattarlab_seqs', 'ucsd_sejnowskilab_recirculation', 'ucsd_jerniganlab_mixture']:
+        #    research_idxs.extend(np.where(np.array(all_tags)==i)[0])
         pct_research = h_research/sum(all_durs)
         print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
         plt.show()
