@@ -23,7 +23,7 @@ UTF8_ENCODING = "utf-8"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
 TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", # research
-          "ucsd_mattarlab_mouse-maze", "oxford_ti", # research
+          "ucsd_mattarlab_mouse-maze", "oxford_ti", "ucsd_jerniganlab_mixture", # research
           "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
           "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
@@ -248,7 +248,7 @@ def calc_total_work_time(daily_journal):
     return total_work - procrastination_dur - personal_dur - maiseducacao_dur - trustedcrowd_dur
 
 
-def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle=""):
+def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
     """
     tags (list of str): list of categories
     atts_in_date_range (list of str): attributions 
@@ -278,14 +278,19 @@ def aggregate_att_hours_and_plot(tags, atts_in_date_range, durs_in_h, figtitle="
     non_zero_tags = array(tags)[non_zero_idxs]
     non_zero_durs = array(tag_durs)[non_zero_idxs]
 
-    plt.figure(figsize=(15,5))
     all_durs = list(non_zero_durs)+[sum(others_durs)]
     all_tags = list(non_zero_tags)+["Others"] if len(others)>0 else []
-    positions = range(len(non_zero_tags)+1)
+
+    return all_tags, all_durs, others
+
+
+def plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle):
+    plt.figure(figsize=(15,5))
+    positions = range(len(all_tags))
     plt.bar(positions, all_durs, tick_label=all_tags)
     # plt.bar(range(len(tag_durs)+1), [dur for dur in tag_durs]+[sum(others_durs)], tick_label=TAGS+[str(others)])
     plt.xticks(rotation=-45, ha="left")
-    plt.xlabel("Others: %s" % str(others))
+    plt.xlabel("Others: %s" % str(others_labels))
     plt.ylabel("Hours")
     plt.title(figtitle)
     plt.grid(axis="y", zorder=0)
@@ -461,10 +466,14 @@ if __name__ == '__main__':
 
         # and plot aggregate plot for the week
         atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
-
         figtitle = "Period from %s %s to %s %s: %.1fh logged" % (period_range[0].strftime('%a'), 
             str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
-        aggregate_att_hours_and_plot(TAGS, atts, durs_in_h, figtitle)
+        all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
+        plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
+        h_research = np.array(all_durs)[np.logical_or(np.logical_or(np.array(all_tags)=='ucsd_mattarlab_seqs',
+            np.array(all_tags)=='ucsd_sejnowskilab_recirculation'), np.array(all_tags)=='ucsd_jerniganlab_mixture')].sum()
+        pct_research = h_research/sum(all_durs)
+        print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
         plt.show()
 
         # # get date from string
@@ -502,7 +511,9 @@ if __name__ == '__main__':
         atts, durs_in_h = get_attributions_and_durations_from_range(str_wk_range)
 
         figtitle = "Week Mon %s - Sun %s: %.1fh logged" % (str_wk_range[0], str_wk_range[-1], sum(durs_in_h))
-        if args.group: aggregate_att_hours_and_plot(TAGS, atts, durs_in_h, figtitle)
+        if args.group:
+            all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
+            plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
         else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
         plt.show()
     else:
