@@ -23,7 +23,7 @@ UTF8_ENCODING = "utf-8"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
 TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", # research
-          "ucsd_mattarlab_mouse-maze", "oxford_ti", "ucsd_jerniganlab_mixture", # research
+          "ucsd_mattarlab_mouse-maze", "oxford_ti", "ucsd_jerniganlab_mixture", "ucsd_cmiglab_abcd", # research
           "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
           "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
@@ -470,8 +470,7 @@ if __name__ == '__main__':
             str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
         all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
-        h_research = np.array(all_durs)[np.logical_or(np.logical_or(np.array(all_tags)=='ucsd_mattarlab_seqs',
-            np.array(all_tags)=='ucsd_sejnowskilab_recirculation'), np.array(all_tags)=='ucsd_jerniganlab_mixture')].sum()
+        h_research = np.array(all_durs)[np.logical_or(np.logical_or(np.logical_or(np.array(all_tags)=='ucsd_mattarlab_seqs',np.array(all_tags)=='ucsd_sejnowskilab_recirculation'),np.array(all_tags)=='ucsd_cmiglab_abcd'), np.array(all_tags)=='ucsd_jerniganlab_mixture')].sum()
         ## the code below shall be useful to extend the sum of research hours for all research items, instead of only these 3, without 
         ## having to nest multiple logical_or
         # research_idxs = []
