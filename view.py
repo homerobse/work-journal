@@ -111,6 +111,10 @@ def timedelta_to_str(td):
     return "%d:%02d" % (td.days*24 + td.seconds//3600, ((td.seconds // 60) % 60))
 
 
+def timedelta_to_float_hours(td):
+    return td.seconds/3600
+
+
 def get_attribution_duration(attributions, durations, item):
     """
     Get the duration of an attribution item
@@ -476,7 +480,7 @@ if __name__ == '__main__':
         # research_idxs = []
         # for i in ['ucsd_mattarlab_seqs', 'ucsd_sejnowskilab_recirculation', 'ucsd_jerniganlab_mixture']:
         #    research_idxs.extend(np.where(np.array(all_tags)==i)[0])
-        pct_research = h_research/sum(all_durs)
+        pct_research = h_research/timedelta_to_float_hours(np.sum(hours))
         print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
         plt.show()
 
