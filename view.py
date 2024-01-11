@@ -22,15 +22,15 @@ UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
-TAGS = ["ucsd_sejnowskilab_esn", "ucsd_sejnowskilab_recirculation", "ucsd_mattarlab_proj", "ucsd_proj", "ucsd_mattarlab_seqs", # research
-          "ucsd_mattarlab_mouse-maze", "oxford_ti", "ucsd_jerniganlab_mixture", "ucsd_cmiglab_abcd", # research
-          "ucsd_class", "ucsd_course", "ucsd_talk",  # courses
+# Use the research list to test if activity is research
+RESEARCH_TAGS = ['ucsd_mattarlab_seqs','ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd', 'ucsd_sejnowskilab_recirculation', 'ucsd_course_cogs205_proj',
+        "ucsd_sejnowskilab_esn", "ucsd_mattarlab_proj","ucsd_proj", "ucsd_mattarlab_mouse-maze", "oxford_ti"]
+TAGS = RESEARCH_TAGS + ["ucsd_class", "ucsd_course", "ucsd_talk",  # courses
           "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
           "sideways-investigation",
           "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-productive
 # Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
-#TODO: create a structure that accounts for the different types of work, i.e. has in it some separation like I did in the comments
 
 def read_txt_file_and_exclude_comments(filename):
     with open(filename, "r") as f:
@@ -474,12 +474,9 @@ if __name__ == '__main__':
             str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
         all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
-        h_research = np.array(all_durs)[np.logical_or(np.logical_or(np.logical_or(np.array(all_tags)=='ucsd_mattarlab_seqs',np.array(all_tags)=='ucsd_sejnowskilab_recirculation'),np.array(all_tags)=='ucsd_cmiglab_abcd'), np.array(all_tags)=='ucsd_jerniganlab_mixture')].sum()
-        ## the code below shall be useful to extend the sum of research hours for all research items, instead of only these 3, without 
-        ## having to nest multiple logical_or
-        # research_idxs = []
-        # for i in ['ucsd_mattarlab_seqs', 'ucsd_sejnowskilab_recirculation', 'ucsd_jerniganlab_mixture']:
-        #    research_idxs.extend(np.where(np.array(all_tags)==i)[0])
+
+        h_research = array(all_durs)[np.logical_or.reduce(array([array(all_tags)==research_tag for research_tag in RESEARCH_TAGS]))].sum()
+
         pct_research = h_research/timedelta_to_float_hours(np.sum(hours))
         print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
         plt.show()
