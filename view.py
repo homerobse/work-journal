@@ -112,7 +112,7 @@ def timedelta_to_str(td):
 
 
 def timedelta_to_float_hours(td):
-    return td.seconds/3600
+    return td.days*24 + td.seconds/3600
 
 
 def get_attribution_duration(attributions, durations, item):
