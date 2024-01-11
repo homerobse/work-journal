@@ -283,7 +283,7 @@ def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
     non_zero_durs = array(tag_durs)[non_zero_idxs]
 
     all_durs = list(non_zero_durs)+[sum(others_durs)]
-    all_tags = list(non_zero_tags)+["Others"] if len(others)>0 else []
+    all_tags = list(non_zero_tags)+["Others"]
 
     return all_tags, all_durs, others
 
