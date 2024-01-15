@@ -1,5 +1,4 @@
 #!/home/homero/software/miniconda3/bin/python
-# TODO: fix plot of the aggregate work hours when I run wj.sh -c 14 (for two weeks). The number of hours is completely off.
 import os
 from os import path
 from os.path import dirname, abspath, join
@@ -361,49 +360,49 @@ def calc_worked_time_in_date_range(date_range):
         n_working_days*8
 
 
-def get_nth_prev_month(curr_yr, curr_mn, nb_mn):
-    """Return `(year, month)` correspondent to `nb_mn` months before the `(curr_yr, curr_mn)` given
+def get_nth_prev_month(curr_yr, curr_month, n_months):
+    """Return `int, int = (year, month)` correspondent to `n_months` months before the
+    `(curr_yr, curr_month)` given.
     :param curr_yr: current year
-    :param curr_mn: current month
-    :param nb_mn: number of months
+    :param curr_month: current month
+    :param n_months: number of months
     :return (year, month)
     """
-    tmp_mn = curr_mn - nb_mn - 1
-    q = tmp_mn // 12
-    r = tmp_mn % 12
-    mn = 1 + r
+    tmp_month = curr_month - n_months - 1
+    q = tmp_month // 12  # quotient
+    r = tmp_month % 12  # remainder
+    month = 1 + r
     yr = curr_yr
     if q < 0:
         yr = curr_yr + q
-        mn = 1 + r
-    return yr, mn
+    return yr, month
 
 ### tests
 
 def test_get_nth_prev_month():
     curr_yr = 2020
-    curr_mn = 6
-    nb_mn = 2
+    curr_month = 6
+    n_months = 2
     ref = (2020, 4)
-    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
-    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
-        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+    test = get_nth_prev_month(curr_yr, curr_month, n_months)
+    assert get_nth_prev_month(curr_yr, curr_month, n_months) == ref, \
+        f"Error. {n_months} months before ({curr_yr}, {curr_month}) should be {ref} not {test}"
 
     curr_yr = 2020
-    curr_mn = 6
-    nb_mn = 6
+    curr_month = 6
+    n_months = 6
     ref = (2019, 12)
-    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
-    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
-        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+    test = get_nth_prev_month(curr_yr, curr_month, n_months)
+    assert get_nth_prev_month(curr_yr, curr_month, n_months) == ref, \
+        f"Error. {n_months} months before ({curr_yr}, {curr_month}) should be {ref} not {test}"
 
     curr_yr = 2020
-    curr_mn = 6
-    nb_mn = 19
+    curr_month = 6
+    n_months = 19
     ref = (2018, 11)
-    test = get_nth_prev_month(curr_yr, curr_mn, nb_mn)
-    assert get_nth_prev_month(curr_yr, curr_mn, nb_mn) == ref, \
-        f"Error. {nb_mn} months before ({curr_yr}, {curr_mn}) should be {ref} not {test}"
+    test = get_nth_prev_month(curr_yr, curr_month, n_months)
+    assert get_nth_prev_month(curr_yr, curr_month, n_months) == ref, \
+        f"Error. {n_months} months before ({curr_yr}, {curr_month}) should be {ref} not {test}"
 
 
 def test_calc_total_work_time():
@@ -497,10 +496,10 @@ if __name__ == '__main__':
         n_months = args.months
         hours = []
         ref_hours = []
-        for m in range(n_months):
-            curr_yr_mn = get_nth_prev_month(today.year, today.month, n_months - m - 1)
-            print("%d-%02d" % curr_yr_mn)
-            month_range = get_month_range(*curr_yr_mn)
+        for m in range(n_months):  # get each month starting from that oldest to the current one
+            curr_yr_month = get_nth_prev_month(today.year, today.month, n_months - 1 - m)
+            print("%d-%02d" % curr_yr_month)
+            month_range = get_month_range(*curr_yr_month)
             res = calc_worked_time_in_date_range(month_range)
 
             print("%6s (ref %dh). Avg. work/day: %5s" % (res[0], res[2], res[1]))
