@@ -1,2 +1,5 @@
 numpy
 natsort
+
+matplotlib
+python-dateutil
