@@ -7,7 +7,7 @@ import re
 import calendar
 
 import numpy as np
-from numpy import array, where
+from numpy import array, where, logical_or
 import matplotlib.pyplot as plt
 import natsort
 import argparse
@@ -243,7 +243,7 @@ def calc_total_work_time(daily_journal):
     for dur in durations:
         total_work += str_to_timedelta(dur)
 
-
+    #todo: enable personal and procrastination subcategories despite not being counted
     procrastination_dur = get_attribution_duration(attributions, durations, "procrastination")
     personal_dur = get_attribution_duration(attributions, durations, "personal")
     maiseducacao_dur = get_attribution_duration(attributions, durations, "maiseducacao")
@@ -253,9 +253,12 @@ def calc_total_work_time(daily_journal):
 
 def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
     """
-    tags (list of str): list of categories
-    atts_in_date_range (list of str): attributions 
-    durs_in_h(ndarray): durations worked on each of the attributions  #TODO: check if it is array or list
+    Args:
+        tags: (list of str) list of categories
+        atts_in_date_range: (list of str) attributions
+        durs_in_h: (ndarray) durations worked on each of the attributions  #TODO: check if it is array or list
+    Returns:
+        all_tags, all_durs, others
     """
     others = []  # others (any attributions not listed in tags)
     others_durs = []
@@ -356,6 +359,11 @@ def calc_worked_time_in_date_range(date_range):
     n_working_days = len(date_range)-off_days
     if n_working_days == 0:
         n_working_days = 0.01  # avoid division by zero
+
+    # TODO: add research hours calculation
+    # atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
+    # all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
+
     return timedelta_to_str(np.sum(hours)), timedelta_to_str(np.sum(hours)/n_working_days), \
         n_working_days*8
 
@@ -412,6 +420,8 @@ def test_calc_total_work_time():
                                         (timedelta_to_str(ref_work_time), timedelta_to_str(work_time))
 
 
+def calc_research_hours(all_durs, all_tags):
+    return all_durs[logical_or.reduce(array([all_tags == research_tag for research_tag in RESEARCH_TAGS]))].sum()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -474,7 +484,7 @@ if __name__ == '__main__':
         all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
 
-        h_research = array(all_durs)[np.logical_or.reduce(array([array(all_tags)==research_tag for research_tag in RESEARCH_TAGS]))].sum()
+        h_research = calc_research_hours(array(all_durs), array(all_tags))
 
         pct_research = h_research/timedelta_to_float_hours(np.sum(hours))
         print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
