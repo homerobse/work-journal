@@ -463,10 +463,10 @@ if __name__ == '__main__':
         period_range = []
         # get worked time for each day and set variables used for calculating average daily work
         for _ in range(n_days):
-            day = dt.strftime(DATE_FORMAT_YMD)
-            str_period_range.append(day)  # used for plotting below
+            day_str = dt.strftime(DATE_FORMAT_YMD)
+            str_period_range.append(day_str)  # used for plotting below
             period_range.append(dt)  # used for plotting below
-            worked_time = get_worked_time_for_strdate(day)
+            worked_time = get_worked_time_for_strdate(day_str)
             print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
             if is_day_off(dt):
                 off_days+=1
