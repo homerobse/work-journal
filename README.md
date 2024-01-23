@@ -68,6 +68,14 @@ Calculates worked hours for the last 7 days.
 
 ![](example-run-day-hours.png)
 
+And plots work time in different categories:
+
+![](example-plot-categories.png)
+
+OBS: the plot above and the text output above don't match because they were run in different days and they count different 
+number of days. Otherwise they are consistent. Also note that "hours logged" (mentioned in the plot title) includes hours 
+logged as "personal" and/or "procrastination", while worked hours (in the text output) don't include those.
+
 `$ python view.py -w 7`
 
 Calculates worked hours for the last 7 weeks.
