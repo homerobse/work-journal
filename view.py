@@ -28,7 +28,7 @@ TAGS = RESEARCH_TAGS + ["ucsd_class", "ucsd_course", "ucsd_talk",  # courses
           "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
           "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
           "sideways-investigation",
-          "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-productive
+          "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-work related
 # Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
 
 def read_txt_file_and_exclude_comments(filename):
@@ -118,7 +118,7 @@ def get_attribution_duration(attributions, durations, item):
     """
     Get the duration of an attribution item
     :param attributions: list of tags
-    :param duration: list of str durations of each attribution
+    :param durations: list of str durations of each attribution
     :param (str) item: the specific attribution for which the duration should be extracted
     :return: (str) duration in format HH:MM
     """
@@ -174,8 +174,8 @@ def get_week_range(day):
 def get_attributions_and_durations(strdate):
     """
     Get attributions and their durations for the given strdate
-    strdate: date of the day from which to get the attributions and their durations
-    return: attributions list, and a durations list
+    :param strdate: date of the day from which to get the attributions and their durations
+    :return: attributions list, and a durations list
     """
     try:
         with open(join(JOURNALS_FOLDER, strdate+TXT_FORMAT), 'r', encoding=UTF8_ENCODING) as f:
@@ -258,7 +258,9 @@ def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
         atts_in_date_range: (list of str) attributions
         durs_in_h: (ndarray) durations worked on each of the attributions  #TODO: check if it is array or list
     Returns:
-        all_tags, all_durs, others
+        all_tags (list of str),
+        all_durs (list of float?),
+        others (list of str)
     """
     others = []  # others (any attributions not listed in tags)
     others_durs = []
@@ -272,7 +274,7 @@ def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
                 tag_durs[i_tag]+=durs_in_h[i_att]
                 break
 
-        if no_matching_tag:
+        if no_matching_tag:  # append to others if there's no match for the current att after checking all tags
             others.append(att)
             others_durs.append(durs_in_h[i_att])
 
@@ -342,7 +344,9 @@ def calc_worked_time_in_date_range(date_range):
     Note: *27/Feb/2019 was when I first started taking note of the amount of hours dedicated to each activity
     * 14/Mar/2019 was when I first started taking note of the hours of start and end of work
     :param date_range: list of dates
-    :return (total worked hours, average worked hours per working day,
+    :return
+        (total worked hours,
+        average worked hours per working day,
         reference number of hours for 8h working days)
     """
     hours=[]
@@ -421,6 +425,11 @@ def test_calc_total_work_time():
 
 
 def calc_research_hours(all_durs, all_tags):
+    """
+    :param all_durs: (ndarray)
+    :param all_tags: (ndarray)
+    :return
+    """
     return all_durs[logical_or.reduce(array([all_tags == research_tag for research_tag in RESEARCH_TAGS]))].sum()
 
 if __name__ == '__main__':
@@ -463,7 +472,7 @@ if __name__ == '__main__':
         period_range = []
         # get worked time for each day and set variables used for calculating average daily work
         for _ in range(n_days):
-            day_str = dt.strftime(DATE_FORMAT_YMD)
+            day_str = dt.strftime(DATE_FORMAT_YMD)  # e.g. '2024-05-01'
             str_period_range.append(day_str)  # used for plotting below
             period_range.append(dt)  # used for plotting below
             worked_time = get_worked_time_for_strdate(day_str)
