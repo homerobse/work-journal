@@ -22,11 +22,15 @@ UTF8_ENCODING = "utf-8"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
 # Use the research list to test if activity is research
-RESEARCH_TAGS = ['ucsd_mattarlab_seqs','ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd', 'ucsd_sejnowskilab_recirculation', 'ucsd_course_cogs205_proj',
-        "ucsd_sejnowskilab_esn", "ucsd_mattarlab_proj","ucsd_proj", "ucsd_mattarlab_mouse-maze", "oxford_ti"]
-TAGS = RESEARCH_TAGS + ["ucsd_class", "ucsd_course", "ucsd_talk",  # courses
-          "ucsd_dayanabbott-rg", "ucsd_planning-rg", "ucsd_book-club", "ucsd_yu-jc", "ucsd_neurotheory-jc", "jotun-rg", # reading group
-          "ucsd_admin", "ucsd_email", "ucsd_ta", "ucsd_tech",  # bureaucracy
+RESEARCH_TAGS = ['ucsd_mattarlab_seqs','ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd',
+        'ucsd_sejnowskilab_recirculation', 'ucsd_course_cogs205_proj',
+        'ucsd_sejnowskilab_esn', 'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_mattarlab_mouse-maze', 'ucsd_mattarlab_ti'
+        'oxford_ti', 'funding', 'dissertation']
+READING_GROUP_TAGS = ["ucsd_dayanabbott-rg", "ucsd_planning-rg", "planning-rg", "ucsd_book-club", "ucsd_yu-jc",
+                      "ucsd_neurotheory-jc", "jotun-rg", "ucsd_tem-rg", "bishop-rg", "ucsd_hpc-rg"]
+STUDY_TAGS = READING_GROUP_TAGS + ['ucsd_class', 'ucsd_course', 'ucsd_talk']
+TAGS = RESEARCH_TAGS + STUDY_TAGS + ["ucsd_admin", "ucsd_email",  # bureaucracy
+          "ucsd_ta", "ucsd_tech",
           "sideways-investigation",
           "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-work related
 # Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
