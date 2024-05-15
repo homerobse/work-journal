@@ -255,7 +255,7 @@ def calc_total_work_time(daily_journal):
     return total_work - procrastination_dur - personal_dur - maiseducacao_dur - trustedcrowd_dur
 
 
-def aggregate_att_hours(tags, atts_in_date_range, durs_in_h, figtitle=""):
+def aggregate_att_hours(tags, atts_in_date_range, durs_in_h):
     """
     Args:
         tags: (list of str) list of categories
@@ -494,7 +494,7 @@ if __name__ == '__main__':
         atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
         figtitle = "Period from %s %s to %s %s: %.1fh logged" % (period_range[0].strftime('%a'), 
             str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
-        all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
+        all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h)
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
 
         h_research = calc_research_hours(array(all_durs), array(all_tags))
@@ -539,7 +539,7 @@ if __name__ == '__main__':
 
         figtitle = "Week Mon %s - Sun %s: %.1fh logged" % (str_wk_range[0], str_wk_range[-1], sum(durs_in_h))
         if args.group:
-            all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h, figtitle)
+            all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h)
             plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
         else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
         plt.show()
