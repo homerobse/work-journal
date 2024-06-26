@@ -346,7 +346,7 @@ def is_day_off(date):
 def calc_worked_time_in_date_range(date_range):
     """
     Note: *27/Feb/2019 was when I first started taking note of the amount of hours dedicated to each activity
-    * 14/Mar/2019 was when I first started taking note of the hours of start and end of work
+    * 14/Mar/2019 was when I first started taking note of the times of the day in which I start and end work
     :param date_range: list of dates
     :return
         (total worked hours,
@@ -359,11 +359,13 @@ def calc_worked_time_in_date_range(date_range):
     for dt in date_range:
         if is_day_off(dt):
             off_days+=1
+            #print(dt)
 
         day = dt.strftime(DATE_FORMAT_YMD)
         worked_time = get_worked_time_for_strdate(day)
         hours.append(str_to_timedelta(worked_time))
         dt+=one_day
+    #print("off_days=", off_days)
     n_working_days = len(date_range)-off_days
     if n_working_days == 0:
         n_working_days = 0.01  # avoid division by zero
