@@ -23,9 +23,11 @@ DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
 # Use the research list to test if activity is research
 RESEARCH_TAGS = ['ucsd_mattarlab_seqs','ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd',
-        'ucsd_sejnowskilab_recirculation', 'ucsd_course_cogs205_proj',
-        'ucsd_sejnowskilab_esn', 'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_mattarlab_mouse-maze', 'ucsd_mattarlab_ti'
-        'oxford_ti', 'funding', 'dissertation']
+        'ucsd_sejnowskilab_recirculation', 'ucsd_sejnowskilab_esn',
+        'ucsd_course_cogs205_proj',
+        'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_mattarlab_mouse-maze',
+        'ucsd_mattarlab_ti', 'oxford_ti', 'ucsd_neuromllab_metrics',
+        'funding', 'dissertation',  'ucsd_advancement']
 READING_GROUP_TAGS = ["ucsd_dayanabbott-rg", "ucsd_planning-rg", "planning-rg", "ucsd_book-club", "ucsd_yu-jc",
                       "ucsd_neurotheory-jc", "jotun-rg", "ucsd_tem-rg", "bishop-rg", "ucsd_hpc-rg"]
 STUDY_TAGS = READING_GROUP_TAGS + ['ucsd_class', 'ucsd_course', 'ucsd_talk']
