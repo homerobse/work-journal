@@ -84,13 +84,13 @@ EXAMPLE_JOURNAL = """
 
 
 def check_worktimes(text):  # not used yet
-#     arrivals = re.findall('\^A(\d?\d:\d\d)', text)
-#     leavings = re.findall('\^L(\d?\d:\d\d)', text)
-#     starts = re.findall('\^S(\d?\d:\d\d)', text)
-#     ends = re.findall('\^E(\d?\d:\d\d)', text)
+#     arrivals = re.findall(r'\^A(\d?\d:\d\d)', text)
+#     leavings = re.findall(r'\^L(\d?\d:\d\d)', text)
+#     starts = re.findall(r'\^S(\d?\d:\d\d)', text)
+#     ends = re.findall(r'\^E(\d?\d:\d\d)', text)
 #     return arrivals, leavings, starts, ends
-    starts = re.findall('\^[SA](\d?\d:\d\d)', text)
-    ends = re.findall('\^[EL](\d?\d:\d\d)', text)
+    starts = re.findall(r"\^[SA](\d?\d:\d\d)", text)
+    ends = re.findall(r"\^[EL](\d?\d:\d\d)", text)
     return starts, ends
 
 
@@ -188,7 +188,7 @@ def get_attributions_and_durations(strdate):
         # if file is not found, return empty lists
         return [],[]
 
-    duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
+    duration_attribution_list = re.findall(r'\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
 
     attributions = []
     durations = []                                                                                                                                                                                      
@@ -234,7 +234,7 @@ def calc_total_work_time(daily_journal):
     :return: timedelta of amount of worked hours
     """
     # TODO: include try/except for when the file does not contain the time tags below.
-    duration_attribution_list = re.findall('\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
+    duration_attribution_list = re.findall(r'\^T([a-zA-Z0-9_-]+)=(\d?\d:\d\d)', daily_journal)  #TODO: include format 2.5 (for 2.5 hours = 2:30)
 
 
     attributions = []
@@ -550,7 +550,7 @@ if __name__ == '__main__':
         cumulative_worked_time = timedelta(seconds=0)
         ordered_files = natsort.humansorted(all_files, reverse=True)
         for filename in ordered_files:
-            if re.match('.*\.txt$', filename):
+            if re.match(r'.*\.txt$', filename):
                 with open(join(JOURNALS_FOLDER, filename), 'r', encoding=UTF8_ENCODING) as f:
                 # with open(filename, 'r') as f:
                     text = f.read().strip()
