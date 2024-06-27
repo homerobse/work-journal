@@ -25,14 +25,18 @@ DATE_FORMAT_MD = "%m-%d"
 RESEARCH_TAGS = ['ucsd_mattarlab_seqs','ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd',
         'ucsd_sejnowskilab_recirculation', 'ucsd_sejnowskilab_esn',
         'ucsd_course_cogs205_proj',
-        'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_mattarlab_mouse-maze',
+        'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_reading-proj', 'ucsd_mattarlab_mouse-maze',
         'ucsd_mattarlab_ti', 'oxford_ti', 'ucsd_neuromllab_metrics',
-        'funding', 'dissertation',  'ucsd_advancement']
+        'funding', 'dissertation',  'ucsd_advancement',
+        'phd-applications', 'applications']
 READING_GROUP_TAGS = ["ucsd_dayanabbott-rg", "ucsd_planning-rg", "planning-rg", "ucsd_book-club", "ucsd_yu-jc",
-                      "ucsd_neurotheory-jc", "jotun-rg", "ucsd_tem-rg", "bishop-rg", "ucsd_hpc-rg"]
-STUDY_TAGS = READING_GROUP_TAGS + ['ucsd_class', 'ucsd_course', 'ucsd_talk']
-TAGS = RESEARCH_TAGS + STUDY_TAGS + ["ucsd_admin", "ucsd_email",  # bureaucracy
-          "ucsd_ta", "ucsd_tech",
+                      "ucsd_neurotheory-jc", "jotun-rg", "jotun-jc", "ucsd_tem-rg", "bishop-rg", "ucsd_hpc-rg",
+                      "ucsd_rl-book", "reading_neuronal-dynamics", "journal-club", "ucsd_journal-club",
+                      "ucsd_jc", "bookclub"]  # TODO: should I add "reading"? check what are the reading TAGS that exist and if they are about reading group or general study. Also, will it be a problem that reading_neuronal-dynamics is a subtag of reading?
+STUDY_TAGS = READING_GROUP_TAGS + ['ucsd_class', 'ucsd_course', 'ucsd_talk', 'literature_scan',
+                                   'literature_reading', 'talk']
+ADMIN_TAGS = ["ucsd_admin", "ucsd_email", "oxford_paperwork", "oxford_email", "admin", "ucsd_paperwork"]
+TAGS = RESEARCH_TAGS + STUDY_TAGS + ADMIN_TAGS + ["ucsd_ta", "ucsd_tech",
           "sideways-investigation",
           "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-work related
 # Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
@@ -361,7 +365,7 @@ def calc_worked_time_in_date_range(date_range):
     for dt in date_range:
         if is_day_off(dt):
             off_days+=1
-            #print(dt)
+            #print(dt, dt.strftime("%a"))
 
         day = dt.strftime(DATE_FORMAT_YMD)
         worked_time = get_worked_time_for_strdate(day)
