@@ -4,6 +4,7 @@
 02-21  # Presidents day
 05-27  # Memorial day
 06-19  # Juneteenth
+07-04  # US Independence day
 09-06  # US labor day, in 2022 it was on 09-05 TODO: adapt code to be year-specific
 11-24  # Thanksgiving 2022
 11-25  # Thanksgiving 2022
