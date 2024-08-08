@@ -9,6 +9,8 @@ import calendar
 import numpy as np
 from numpy import array, where, logical_or
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use( 'tkagg')
 import natsort
 import argparse
 import datetime
