@@ -362,7 +362,7 @@ def is_day_off(date):
     :param (datetime.date) date
     :return (bool) True if it is a date of a day-off, False if not.
     """
-    return date.strftime("%a") in ["Sat", "Sun"] or date.strftime(DATE_FORMAT_YMD) in VACATIONS or date.strftime(DATE_FORMAT_MD) in HOLIDAYS
+    return date.strftime("%a") in ["Sat", "Sun"] or date.strftime(DATE_FORMAT_YMD) in VACATIONS or date.strftime(DATE_FORMAT_YMD) in HOLIDAYS
 
 
 def calc_worked_time_in_date_range(date_range):
