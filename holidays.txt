@@ -1,13 +1,56 @@
-01-01  # new year day
-01-17  # Martin Luther King Jr day
-02-21  # Presidents day
-05-27  # Memorial day
-06-19  # Juneteenth
-07-04  # US Independence day
-09-06  # US labor day, in 2022 it was on 09-05 TODO: adapt code to be year-specific
-11-11  # US Veterans day
-11-28  # Thanksgiving 2022, in 2022 it was on 11-24 TODO: adapt code to be year-specific
-11-29  # Thanksgiving 2022, in 2022 it was on 11-25 TODO: adapt code to be year-specific
-12-24  # Christmas Eve
-12-25  # Christmas Day
-12-31  # new year
+# 2025
+2025-01-01  # New Year Day
+2025-01-20  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
+2025-02-17  # President's day - 3rd Monday in February (year-specific)
+2025-05-26  # Memorial day - last Monday in May (year-specific)
+2024-06-19  # Juneteenth
+2024-07-04  # US Independence day
+2025-09-01  # US labor day - (year-specific)
+2025-11-11  # US Veterans day
+2025-11-27  # Thanksgiving - (year-specific)
+2025-11-28  # Thanksgiving - (year-specific)
+2025-12-24  # Christmas Eve
+2025-12-25  # Christmas Day
+2025-12-31  # New Year's Eve
+# 2024
+2024-01-01  # New Year Day
+2024-01-17  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
+2024-02-21  # Presidents day - 3rd Monday in February (year-specific)
+2024-05-27  # Memorial day - last Monday in May (year-specific)
+2024-06-19  # Juneteenth
+2024-07-04  # US Independence day
+2024-09-06  # US labor day - (year-specific)
+2024-11-11  # US Veterans day
+2024-11-28  # Thanksgiving - (year-specific)
+2024-11-29  # Thanksgiving - (year-specific)
+2024-12-24  # Christmas Eve
+2024-12-25  # Christmas Day
+2024-12-31  # New Year's Eve
+# 2023
+2023-01-01  # New Year Day
+2023-01-16  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
+2023-02-20  # Presidents day - 3rd Monday in February (year-specific)
+2023-05-29  # Memorial day - last Monday in May (year-specific)
+2024-06-19  # Juneteenth
+2023-07-04  # US Independence day
+2023-09-04  # US labor day - (year-specific)
+2023-11-11  # US Veterans day
+2022-11-23  # Thanksgiving - (year-specific)
+2022-11-24  # Thanksgiving - (year-specific)
+2023-12-24  # Christmas Eve
+2023-12-25  # Christmas Day
+2023-12-31  # New Year's Eve
+# 2022
+2022-01-01  # New Year Day
+2022-01-17  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
+2022-02-21  # Presidents day - 3rd Monday in February (year-specific)
+2022-05-30  # Memorial day - last Monday in May (year-specific)
+2024-06-20  # Juneteenth
+2022-07-04  # US Independence day
+2022-09-05  # US labor day - (year-specific)
+2022-11-11  # US Veterans day
+2022-11-24  # Thanksgiving - (year-specific)
+2022-11-25  # Thanksgiving - (year-specific)
+2022-12-24  # Christmas Eve
+2022-12-25  # Christmas Day
+2022-12-31  # New Year's Eve
