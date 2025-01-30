@@ -31,7 +31,7 @@ RESEARCH_TAGS = ['ucsd_mattarlab_seqs', 'ucsd_mattarlab_proj','ucsd_proj', 'ucsd
         'ucsd_course_cogs205_proj',
         'ucsd_mattarlab_mouse-maze', 'ucsd_mattarlab_maze', 'ucsd_mouse-maze',
         'ucsd_mattarlab_ti', 'oxford_ti', 'oxford_ti-draft', 'oxford_proj', 'oxford_paper',
-        'ucsd_neuromllab_metrics',
+        'ucsd_neuromllab_metrics', 'ucsd_neuromllab_dim',
         'funding', 'dissertation',  'ucsd_advancement', 'ucsd_research', 'thesis',
         'phd-applications', 'applications', 'ucsd_mattarlab_peer-review']
 READING_GROUP_TAGS = ["ucsd_dayanabbott-rg", "ucsd_planning-rg", "planning-rg", "ucsd_book-club", "ucsd_yu-jc",
