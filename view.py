@@ -10,6 +10,7 @@ import numpy as np
 from numpy import array, where, logical_or
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.ticker import MultipleLocator
 matplotlib.use( 'tkagg')
 import natsort
 import argparse
@@ -246,6 +247,10 @@ def plot_wk_all_activities(atts, durs_in_h, str_monday, str_sunday):
     plt.xticks(rotation=-45, ha="left");
     plt.ylabel("Hours")
     plt.title("Week Mon %s - Sun %s: %.1fh logged" % (str_monday, str_sunday, sum(durs_in_h)))
+    plt.gca().yaxis.set_major_locator(MultipleLocator(1))
+    plt.gca().yaxis.set_minor_locator(MultipleLocator(.25))
+    plt.grid(axis="y")
+    plt.gca().set_axisbelow(True)
     plt.tight_layout()
     return plt.gcf(), plt.gca()
 
@@ -328,9 +333,12 @@ def plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle):
     plt.xlabel("Others: %s" % str(others_labels))
     plt.ylabel("Hours")
     plt.title(figtitle)
-    plt.grid(axis="y", zorder=0)
+    plt.gca().yaxis.set_major_locator(MultipleLocator(1))
+    plt.gca().yaxis.set_minor_locator(MultipleLocator(.25))
+    plt.grid(axis="y")
     plt.gca().set_axisbelow(True)
     plt.tight_layout()
+    return plt.gcf(), plt.gca()
 
 
 def get_worked_time_for_strdate(strdate):
