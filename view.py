@@ -23,6 +23,7 @@ UTF8_ENCODING = "utf-8"
 # iso_encoding = "ISO-8859-1"
 DATE_FORMAT_YMD = "%Y-%m-%d"
 DATE_FORMAT_MD = "%m-%d"
+TIME_FORMAT_HM = "%H:%M"
 # Use the research list to test if activity is research
 RESEARCH_TAGS = ['ucsd_mattarlab_seqs', 'ucsd_mattarlab_proj','ucsd_proj', 'ucsd_reading-proj',
         'ucsd_jerniganlab_mixture', 'ucsd_cmiglab_abcd', 'ucsd_jerniganlab_proj',
@@ -490,6 +491,7 @@ if __name__ == '__main__':
     # all_files.remove
 
     today = datetime.date.today()
+    print(f"Time now: {datetime.datetime.now().strftime(TIME_FORMAT_HM)}")
     one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
