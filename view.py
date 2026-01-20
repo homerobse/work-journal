@@ -11,7 +11,7 @@ from numpy import array, where, logical_or
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.ticker import MultipleLocator
-matplotlib.use( 'tkagg')
+matplotlib.use('tkagg')
 import natsort
 import argparse
 import datetime
@@ -141,6 +141,10 @@ def timedelta_to_str(td):
 
 def timedelta_to_float_hours(td):
     return td.days*24 + td.seconds/3600
+
+
+def str_to_float_hours(time_str):
+    return timedelta_to_float_hours(str_to_timedelta(time_str))
 
 
 def get_attribution_duration(attributions, durations, item):
@@ -513,29 +517,25 @@ if __name__ == '__main__':
         # get worked time for each day
         for _ in range(n_days):
             day_str = dt.strftime(DATE_FORMAT_YMD)  # e.g. '2024-05-01'
-            str_period_range.append(day_str)  # used for plotting below
-            period_range.append(dt)  # used for plotting below
             worked_time = get_worked_time_for_strdate(day_str)
             print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
-            if is_day_off(dt):
-                off_days+=1
-
-            hours.append(str_to_timedelta(worked_time))
             dt+=one_day
-        n_working_days = n_days-off_days  # TODO: this is imprecise/wrong, as there may be days I did not work when I should have done it. In this case, there would be no files for them, so `n_days` would be less than the number of working days.
-        print("***\nAverage hours worked per working day: %s" % timedelta_to_str(np.sum(hours)/n_working_days))
-        print("Total hours worked in these %d days: %s" % (n_days, timedelta_to_str(np.sum(hours))))
+
+        range_last_n_days = [today - (n_days-1-i) * one_day for i in range(n_days)]
+        wrk_hrs, avg_per_day, ref_hrs = calc_worked_time_in_date_range(range_last_n_days)
+        print(f"***\nAverage hours per working day: {avg_per_day}")
+        print(f"Total hours in {int(ref_hrs/8)} working days: {wrk_hrs}")
 
         # and plot aggregate plot for the week
-        atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
-        figtitle = "Period from %s %s to %s %s: %.1fh logged" % (period_range[0].strftime('%a'), 
-            str_period_range[0], period_range[-1].strftime('%a'), str_period_range[-1], sum(durs_in_h))
+        str_range_last_n_days = [day.strftime(DATE_FORMAT_YMD) for day in range_last_n_days]  # ['2024-05-01', ...]
+        atts, durs_in_h = get_attributions_and_durations_from_range(str_range_last_n_days)
+        figtitle = "Period from %s %s to %s %s: %.1fh logged" % (range_last_n_days[0].strftime('%a'), str_range_last_n_days[0],
+                                        range_last_n_days[-1].strftime('%a'), str_range_last_n_days[-1], sum(durs_in_h))
         all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h)
         plot_aggregate_att_hours(all_tags, all_durs, others_labels, figtitle)
 
         h_research = calc_research_hours(array(all_durs), array(all_tags))
-
-        pct_research = h_research/timedelta_to_float_hours(np.sum(hours))
+        pct_research = h_research/str_to_float_hours(wrk_hrs)
         print(f"Research: {h_research:.1f}h | {100*pct_research:.0f}%")
         plt.show()
 
