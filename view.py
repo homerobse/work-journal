@@ -39,24 +39,25 @@ RESEARCH_TAGS = ['ucsd_mattarlab_seqs', 'ucsd_mattarlab_proj','ucsd_proj', 'ucsd
 READING_GROUP_TAGS = ["ucsd_dayanabbott-rg", "ucsd_planning-rg", "planning-rg", "ucsd_book-club", "ucsd_yu-jc",
                       "ucsd_neurotheory-jc", "jotun-rg", "jotun-jc", "ucsd_tem-rg", "bishop-rg", "ucsd_hpc-rg",
                       "ucsd_rl-book", "reading_neuronal-dynamics", "journal-club", "ucsd_journal-club",
-                      "ucsd_jc", "bookclub", "ucsd_jerniganlab_journal-club"]
-# TODO: should I add "reading"? check what are the reading TAGS that exist and if they are about reading group or general study. 
-# Also, will it be a problem that reading_neuronal-dynamics is a subtag of reading?
+                      "ucsd_jc", "bookclub", "ucsd_jerniganlab_journal-club", "ucsd_neuromllab_jc"]
 STUDY_TAGS = READING_GROUP_TAGS + ['ucsd_class', 'ucsd_course', 'literature_scan',
                 'literature_reading', 'literature_meeting',
                 'talk', 'ufrn_talk', 'ucsd_talk',
-                'ucsd_reading',
-                'sideways-investigation', 'ucsd_sideways-investigation', 'sideways-investigation',
+                'ucsd_reading', 'thinking',
+                'sideways-investigation', 'ucsd_sideways-investigation',
                 'ucsd_mattarlab_lab-meeting', 'ucsd_jerniganlab_lab-meeting', 'ucsd_lab-meeting',
-                'ucsd_neuromllab_lab-meeting',
+                'ucsd_neuromllab_lab-meeting', 'ucsd_neuromllab_meeting', 
                 'ucsd_bazhenovlab_lab-meeting', 'ucsd_mattarlab_meeting', 'ucsd_mattarlab_luke', 
-                'ucsd_sejnowskilab_lab-meeting', 'conference_sfn', 'ucsd_writinghub',
-                'ucsd_sejnowskilab_meeting', 'ucsd_jerniganlab_meeting']
+                'ucsd_sejnowskilab_lab-meeting', 'ucsd_sejnowskilab_meeting', 'ucsd_writinghub',
+                'ucsd_jerniganlab_meeting',
+                'course', 'wetlab',
+                'conference_sfn', 'conference_neurips']
 # 'ucsd_mattarlab': not sure how to cover a tag that is a parent tag for another one (ucsd_mattarlab_seqs) that I already count elsewhere]
 ADMIN_TAGS = ["ucsd_admin", "ucsd_email", "oxford_paperwork", "oxford_email", "admin", 
                 "ucsd_paperwork", "organization", "ucsd_visa", "msg"]
-TAGS = RESEARCH_TAGS + STUDY_TAGS + ADMIN_TAGS + ["ucsd_ta", "ucsd_tech",
-          "rest", "personal", "procrastination", "maiseducacao", "trustedcrowd"]  # non-work related
+PERSONAL_TAGS = ["personal", "personal_money", "personal_health", "personal_admin", "personal_leisure"]
+TAGS = RESEARCH_TAGS + STUDY_TAGS + ADMIN_TAGS + PERSONAL_TAGS + ["ucsd_ta", "ucsd_tech",
+          "rest", "procrastination", "maiseducacao", "trustedcrowd"]  # non-work related
 # Anything not included in the TAGS list will be listed together as "Other". Check code that separate worked time into categories
 
 def read_txt_file_and_exclude_comments(filename):
