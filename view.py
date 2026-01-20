@@ -505,11 +505,21 @@ if __name__ == '__main__':
             curr_yr_month = get_nth_prev_month(today.year, today.month, n_months - 1 - m)
             print("%d-%02d" % curr_yr_month)
             month_range = get_month_range(*curr_yr_month)
-            res = calc_worked_time_in_date_range(month_range)
+            wrk_hrs, avg_per_day, ref_hrs = calc_worked_time_in_date_range(month_range)
 
-            print("%6s (ref %dh). Avg. work/working day: %5s" % (res[0], res[2], res[1]))
-            hours.append(str_to_timedelta(res[0]))
-            ref_hours.append(res[2])
+            # collect attributions/durations for the month and compute research hours
+            str_month_range = [day.strftime(DATE_FORMAT_YMD) for day in month_range]
+            atts, durs_in_h = get_attributions_and_durations_from_range(str_month_range)
+            all_tags, all_durs, others_labels = aggregate_att_hours(TAGS, atts, durs_in_h)
+            h_research = calc_research_hours(array(all_durs), array(all_tags))
+            total_h = str_to_float_hours(wrk_hrs)
+            pct_research = (100*h_research/total_h) if total_h > 0 else 0.0
+
+            print("%6s (ref %dh). Avg. work/working day: %5s | Research: %.1fh (%.0f%%)" %
+                  (wrk_hrs, ref_hrs, avg_per_day, h_research, pct_research))
+
+            hours.append(str_to_timedelta(wrk_hrs))
+            ref_hours.append(ref_hrs)
 
         print("***")
         print("Actual                   |", timedelta_to_str(np.sum(hours)))
