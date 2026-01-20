@@ -434,7 +434,7 @@ def calc_research_hours(all_durs, all_tags):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('n_files', type=int, nargs='?', help='number of days to be displayed')
-    parser.add_argument('-c', '--count', type=int, help='print the number of hours worked in the last "c" days')
+    parser.add_argument('-d', '--days', type=int, help='print the number of hours worked in the last "d" days')
     parser.add_argument('-m', '--months', type=int, help='print the number of hours worked in the last "m" months')
     parser.add_argument('-w', '--weeks', type=int, help='print the number of hours worked in the last "w" weeks')
     parser.add_argument('-t', '--test', help='run application tests.', action='store_true')
@@ -446,8 +446,8 @@ if __name__ == '__main__':
     today = datetime.date.today()
     print(f"Today: {today.strftime(DATE_FORMAT_YMD)} {today.strftime('%a')}. Time now: {datetime.datetime.now().strftime(TIME_FORMAT_HM)}")
     one_day = timedelta(days=1)
-    if args.count:
-        n_days = args.count
+    if args.days:
+        n_days = args.days
         dt = today - (n_days-1) * one_day  # get datetime object for (n_days-1) days ago (i.e. start from today and go back in time)
         # get worked time for each day
         for _ in range(n_days):
