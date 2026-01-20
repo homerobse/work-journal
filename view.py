@@ -405,7 +405,7 @@ def calc_worked_time_in_date_range(date_range):
     #print("off_days=", off_days)
     n_working_days = len(date_range)-off_days
     if n_working_days == 0:
-        n_working_days = 0.01  # avoid division by zero
+        n_working_days = 0.001  # avoid division by zero
 
     # TODO: add research hours calculation
     # atts, durs_in_h = get_attributions_and_durations_from_range(str_period_range)
@@ -509,12 +509,8 @@ if __name__ == '__main__':
     one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
-        hours = []
-        off_days = 0
-        str_period_range = []
-        period_range = []
-        # get worked time for each day and set variables used for calculating average daily work
         dt = today - (n_days-1) * one_day  # get datetime object for (n_days-1) days ago (i.e. start from today and go back in time)
+        # get worked time for each day
         for _ in range(n_days):
             day_str = dt.strftime(DATE_FORMAT_YMD)  # e.g. '2024-05-01'
             str_period_range.append(day_str)  # used for plotting below
