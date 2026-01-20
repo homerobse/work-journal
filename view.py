@@ -276,12 +276,17 @@ def calc_total_work_time(daily_journal):
     for dur in durations:
         total_work += str_to_timedelta(dur)
 
-    #todo: enable personal and procrastination subcategories despite not being counted
     procrastination_dur = get_attribution_duration(attributions, durations, "procrastination")
     personal_dur = get_attribution_duration(attributions, durations, "personal")
+    personal_money_dur = get_attribution_duration(attributions, durations, "personal_money")
+    personal_health_dur = get_attribution_duration(attributions, durations, "personal_health")
+    personal_admin_dur = get_attribution_duration(attributions, durations, "personal_admin")
+    personal_leisure_dur = get_attribution_duration(attributions, durations, "personal_leisure")
     maiseducacao_dur = get_attribution_duration(attributions, durations, "maiseducacao")
     trustedcrowd_dur = get_attribution_duration(attributions, durations, "trustedcrowd")
-    return total_work - procrastination_dur - personal_dur - maiseducacao_dur - trustedcrowd_dur
+    return total_work - procrastination_dur - personal_dur - personal_money_dur \
+        - personal_health_dur - personal_admin_dur - personal_leisure_dur \
+        - maiseducacao_dur - trustedcrowd_dur
 
 
 def aggregate_att_hours(tags, atts_in_date_range, durs_in_h):
