@@ -84,5 +84,4 @@ Calculates worked hours for the last 7 weeks.
 
 ## TODO
 
-* enable personal subcategories
 * enable counting personal hours

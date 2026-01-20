@@ -442,17 +442,6 @@ if __name__ == '__main__':
     parser.add_argument('-g', '--group', help='plot all activities of the current week grouped by tags.', action='store_true')
     args = parser.parse_args()
 
-    all_files = os.listdir(JOURNALS_FOLDER)
-
-    if args.n_files is None:
-        n_files = len(all_files)  # default is scanning all files
-    else:
-        n_files = args.n_files
-
-    # all_files.remove('view.py')
-    # all_files.remove('this week')
-    # all_files.remove('worth-readings')
-    # all_files.remove
 
     today = datetime.date.today()
     print(f"Today: {today.strftime(DATE_FORMAT_YMD)} {today.strftime('%a')}. Time now: {datetime.datetime.now().strftime(TIME_FORMAT_HM)}")
@@ -536,6 +525,9 @@ if __name__ == '__main__':
         else: plot_wk_all_activities(atts, durs_in_h, str_wk_range[0], str_wk_range[-1])
         plt.show()
     else:
+        all_files = os.listdir(JOURNALS_FOLDER)
+        n_files = args.n_files if args.n_files is not None else 10 # default is scanning last 10 files
+
         count=0
         cumulative_worked_time = timedelta(seconds=0)
         ordered_files = natsort.humansorted(all_files, reverse=True)
