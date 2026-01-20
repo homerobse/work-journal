@@ -414,7 +414,13 @@ def get_nth_prev_month(curr_yr, curr_month, n_months):
     return yr, month
 
 
-
+def day_holiday_vacation_tag(day_str):
+    """Return a label if the given date string is a holiday or a vacation, else empty string."""
+    if day_str in HOLIDAYS:
+        return "(holiday)"
+    elif day_str in VACATIONS:
+        return "(vacation)"
+    return ""
 
 
 def calc_research_hours(all_durs, all_tags):
@@ -458,7 +464,7 @@ if __name__ == '__main__':
         for _ in range(n_days):
             day_str = dt.strftime(DATE_FORMAT_YMD)  # e.g. '2024-05-01'
             worked_time = get_worked_time_for_strdate(day_str)
-            print(dt, dt.strftime('%a'), worked_time)  # YYYY-MM-DD Mon/Tue/... H:MM
+            print(dt, dt.strftime('%a'), worked_time, day_holiday_vacation_tag(day_str))  # YYYY-MM-DD Mon/Tue/... H:MM (holiday/vacation)
             dt+=one_day
 
         range_last_n_days = [today - (n_days-1-i) * one_day for i in range(n_days)]
