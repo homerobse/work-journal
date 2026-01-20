@@ -1,10 +1,26 @@
+# 2026
+2026-01-01  # New Year Day
+2026-01-19  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
+2026-02-16  # President's day - 3rd Monday in February (year-specific)
+2026-03-27  # Cesar Chavez day - last Friday in March (year-specific)
+2026-05-25  # Memorial day - last Monday in May (year-specific)
+2026-06-19  # Juneteenth
+2026-07-03  # US Independence day (brought to Friday, since 7/4 is Saturday)
+2026-09-07  # US labor day - (year-specific)
+2026-11-11  # US Veterans day
+2026-11-26  # Thanksgiving - (year-specific)
+2026-11-27  # Thanksgiving - (year-specific)
+2026-12-24  # Christmas Eve
+2026-12-25  # Christmas Day
+2026-12-31  # New Year's Eve
 # 2025
 2025-01-01  # New Year Day
 2025-01-20  # Martin Luther King Jr day - 3rd Monday in January (year-specific)
 2025-02-17  # President's day - 3rd Monday in February (year-specific)
+2025-03-28  # Cesar Chavez day - last Friday in March (year-specific)
 2025-05-26  # Memorial day - last Monday in May (year-specific)
-2024-06-19  # Juneteenth
-2024-07-04  # US Independence day
+2025-06-19  # Juneteenth
+2025-07-04  # US Independence day
 2025-09-01  # US labor day - (year-specific)
 2025-11-11  # US Veterans day
 2025-11-27  # Thanksgiving - (year-specific)
