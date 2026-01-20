@@ -384,7 +384,7 @@ def calc_worked_time_in_date_range(date_range):
     """
     Note: *27/Feb/2019 was when I first started taking note of the amount of hours dedicated to each activity
     * 14/Mar/2019 was when I first started taking note of the times of the day in which I start and end work
-    :param date_range: list of dates
+    :param date_range: list of datetime.date
     :return
         ((str) total worked hours,
          (str) average worked hours per working day,
@@ -509,12 +509,12 @@ if __name__ == '__main__':
     one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
-        dt = today - (n_days-1) * one_day  # get datetime object for (n_days - 1) days ago (i.e. start from today and goes back in time)
         hours = []
         off_days = 0
         str_period_range = []
         period_range = []
         # get worked time for each day and set variables used for calculating average daily work
+        dt = today - (n_days-1) * one_day  # get datetime object for (n_days-1) days ago (i.e. start from today and go back in time)
         for _ in range(n_days):
             day_str = dt.strftime(DATE_FORMAT_YMD)  # e.g. '2024-05-01'
             str_period_range.append(day_str)  # used for plotting below
@@ -552,8 +552,8 @@ if __name__ == '__main__':
             wk_monday = last_monday + timedelta(days=-7*w)
             print("Mon", wk_monday, "- Sun", wk_monday+timedelta(days=+6))
             wk_range = [(wk_monday + i*one_day) for i in range(7)]  # all days of the week from Monday to Sunday
-            wrk_hrs, ref_hrs, avg_per_day = calc_worked_time_in_date_range(wk_range)
-            print("%6s (ref %dh). Avg. work/day: %5s" % (wrk_hrs, avg_per_day, ref_hrs))
+            wrk_hrs, avg_per_day, ref_hrs = calc_worked_time_in_date_range(wk_range)
+            print("%6s (ref %dh). Avg. work/working day: %5s" % (wrk_hrs, ref_hrs, avg_per_day))
 
     elif args.months:
         n_months = args.months
@@ -565,7 +565,7 @@ if __name__ == '__main__':
             month_range = get_month_range(*curr_yr_month)
             res = calc_worked_time_in_date_range(month_range)
 
-            print("%6s (ref %dh). Avg. work/day: %5s" % (res[0], res[2], res[1]))
+            print("%6s (ref %dh). Avg. work/working day: %5s" % (res[0], res[2], res[1]))
             hours.append(str_to_timedelta(res[0]))
             ref_hours.append(res[2])
 
