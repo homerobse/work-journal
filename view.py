@@ -125,7 +125,7 @@ def str_to_timedelta(time_str):
     :param time_str: time string in format hours:minutes. E.g. 198:55, or 4:32
     :return: timedelta object
     """
-    return timedelta(seconds=int(time_str.split(":")[0]) * 3600 + int(time_str.split(":")[1]) * 60)
+    return timedelta(seconds=int(time_str.split(":")[0]) * 3600 + int(time_str.split(":")[1]) * 60)  # h*3600+m*60
 
 
 def timedelta_to_str(td):
@@ -386,9 +386,9 @@ def calc_worked_time_in_date_range(date_range):
     * 14/Mar/2019 was when I first started taking note of the times of the day in which I start and end work
     :param date_range: list of dates
     :return
-        (total worked hours,
-        average worked hours per working day,
-        reference number of hours for 8h working days)
+        ((str) total worked hours,
+         (str) average worked hours per working day,
+         (int or float) reference number of hours for 8h-working days)
     """
     hours=[]
     off_days = 0
@@ -505,7 +505,7 @@ if __name__ == '__main__':
     # all_files.remove
 
     today = datetime.date.today()
-    print(f"Time now: {datetime.datetime.now().strftime(TIME_FORMAT_HM)}")
+    print(f"Today: {today.strftime(DATE_FORMAT_YMD)} {today.strftime('%a')}. Time now: {datetime.datetime.now().strftime(TIME_FORMAT_HM)}")
     one_day = timedelta(days=1)
     if args.count:
         n_days = args.count
